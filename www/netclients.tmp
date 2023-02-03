@@ -1,0 +1,21 @@
+Interface: wlp1s0, datalink type: EN10MB (Ethernet)
+Starting arp-scan 1.9 with 256 hosts (http://www.nta-monitor.com/tools/arp-scan/)
+10.0.0.1	00:50:f1:80:00:00	Intel Corporation
+10.0.0.61	14:b3:1f:00:69:60	(Unknown)
+10.0.0.14	d0:73:d5:23:2f:d2	LIFI LABS MANAGEMENT PTY LTD
+10.0.0.14	d0:73:d5:23:2f:d2	LIFI LABS MANAGEMENT PTY LTD (DUP: 2)
+10.0.0.69	b8:27:eb:1c:c4:b6	Raspberry Pi Foundation
+10.0.0.89	00:17:88:27:63:c0	Philips Lighting BV
+10.0.0.137	9e:90:e2:24:41:74	(Unknown)
+10.0.0.137	9e:90:e2:24:41:74	(Unknown) (DUP: 2)
+10.0.0.152	58:ef:68:99:4f:25	(Unknown)
+10.0.0.152	58:ef:68:99:4f:25	(Unknown) (DUP: 2)
+10.0.0.254	00:05:04:03:02:01	Naray Information & Communication Enterprise
+10.0.0.183	d0:73:d5:23:63:33	LIFI LABS MANAGEMENT PTY LTD
+10.0.0.183	d0:73:d5:23:63:33	LIFI LABS MANAGEMENT PTY LTD (DUP: 2)
+10.0.0.227	ac:37:43:a0:ba:f7	(Unknown)
+10.0.0.108	e0:69:95:38:c2:8c	PEGATRON CORPORATION
+10.0.0.108	e0:69:95:38:c2:8c	PEGATRON CORPORATION (DUP: 2)
+
+16 packets received by filter, 0 packets dropped by kernel
+Ending arp-scan 1.9: 256 hosts scanned in 2.353 seconds (108.80 hosts/sec). 16 responded

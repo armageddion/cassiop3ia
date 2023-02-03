@@ -1,0 +1,4 @@
+DATABASE_URL='localhost'
+DATABASE_NAME='cassiop3ia'
+DATABASE_USER='alfr3d'
+DATABASE_PSWD='alfr3d'

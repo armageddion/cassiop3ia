@@ -1,0 +1,11 @@
+kafka-python
+flask
+flask-wtf
+flask-sqlalchemy
+flask-migrate
+flask-login
+flask-bootstrap
+email-validator
+mysqlclient
+jwt
+schedule

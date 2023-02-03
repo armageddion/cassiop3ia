@@ -1,0 +1,122 @@
+2022-11-13 15:33:17,559 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 15:42:46,028 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 15:43:33,924 ERROR: Exception on /register [POST] [in /home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py:1741]
+Traceback (most recent call last):
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/littl3.1/Alfr3d/cassiop3ia/www/app/routes.py", line 120, in register
+    if form.validate_on_submit():
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask_wtf/form.py", line 86, in validate_on_submit
+    return self.is_submitted() and self.validate()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/wtforms/form.py", line 329, in validate
+    return super().validate(extra)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/wtforms/form.py", line 146, in validate
+    if not field.validate(self, extra):
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/wtforms/fields/core.py", line 242, in validate
+    stop_validation = self._run_validation_chain(form, chain)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/wtforms/fields/core.py", line 262, in _run_validation_chain
+    validator(form, self)
+  File "/home/littl3.1/Alfr3d/cassiop3ia/www/app/forms.py", line 26, in validate_username
+    user = User.query.filter_by(username=username.data).first()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask_sqlalchemy/model.py", line 30, in __get__
+    return cls.query_class(
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/query.py", line 180, in __init__
+    self._set_entities(entities)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/query.py", line 187, in _set_entities
+    self._raw_columns = [
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/query.py", line 188, in <listcomp>
+    coercions.expect(
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/sql/coercions.py", line 181, in expect
+    insp._post_inspect
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/util/langhelpers.py", line 1184, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 2199, in _post_inspect
+    self._check_configure()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 1941, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 3527, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 3566, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 1958, in _post_configure_properties
+    prop.init()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/interfaces.py", line 231, in init
+    self.do_init()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/relationships.py", line 2150, in do_init
+    self._generate_backref()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/relationships.py", line 2430, in _generate_backref
+    raise sa_exc.ArgumentError(
+sqlalchemy.exc.ArgumentError: Error creating backref 'user_id' on relationship 'User.usr_id': property of that name exists on mapper 'mapped class Device->device'
+2022-11-13 15:54:49,326 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 15:54:54,993 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 15:55:06,476 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 15:55:16,310 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 15:56:03,610 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 15:56:09,828 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 15:56:17,465 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 16:00:33,093 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 16:00:42,782 ERROR: Exception on /register [POST] [in /home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py:1741]
+Traceback (most recent call last):
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask/app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/littl3.1/Alfr3d/cassiop3ia/www/app/routes.py", line 120, in register
+    if form.validate_on_submit():
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask_wtf/form.py", line 86, in validate_on_submit
+    return self.is_submitted() and self.validate()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/wtforms/form.py", line 329, in validate
+    return super().validate(extra)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/wtforms/form.py", line 146, in validate
+    if not field.validate(self, extra):
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/wtforms/fields/core.py", line 242, in validate
+    stop_validation = self._run_validation_chain(form, chain)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/wtforms/fields/core.py", line 262, in _run_validation_chain
+    validator(form, self)
+  File "/home/littl3.1/Alfr3d/cassiop3ia/www/app/forms.py", line 26, in validate_username
+    user = User.query.filter_by(username=username.data).first()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/flask_sqlalchemy/model.py", line 30, in __get__
+    return cls.query_class(
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/query.py", line 180, in __init__
+    self._set_entities(entities)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/query.py", line 187, in _set_entities
+    self._raw_columns = [
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/query.py", line 188, in <listcomp>
+    coercions.expect(
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/sql/coercions.py", line 181, in expect
+    insp._post_inspect
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/util/langhelpers.py", line 1184, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 2199, in _post_inspect
+    self._check_configure()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 1941, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 3527, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 3566, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/mapper.py", line 1958, in _post_configure_properties
+    prop.init()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/interfaces.py", line 231, in init
+    self.do_init()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/relationships.py", line 2150, in do_init
+    self._generate_backref()
+  File "/home/littl3.1/.local/lib/python3.10/site-packages/sqlalchemy/orm/relationships.py", line 2430, in _generate_backref
+    raise sa_exc.ArgumentError(
+sqlalchemy.exc.ArgumentError: Error creating backref 'user_id' on relationship 'User.usr_id': property of that name exists on mapper 'mapped class Device->device'
+2022-11-13 16:01:53,084 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 16:06:16,597 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 16:06:26,047 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 16:06:37,114 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 16:06:53,285 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
+2022-11-13 16:07:53,708 INFO: Cassiop3ia web startup [in /home/littl3.1/Alfr3d/cassiop3ia/www/app/__init__.py:49]
