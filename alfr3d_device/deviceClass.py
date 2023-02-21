@@ -104,7 +104,7 @@ class Device:
 			cursor.execute("SELECT * from environment WHERE name = \""+self.environment+"\";")
 			data = cursor.fetchone()
 			envid = data[0]
-			cursor.execute("INSERT INTO device(name, IP, MAC, last_online, state, device_type_id, user_id, environment_id) \
+			cursor.execute("INSERT INTO device(name, IP, MAC, last_online, state, device_type, user_id, environment_id) \
 							VALUES (\""+self.name+"\", \""+self.IP+"\", \""+self.MAC+"\",  \""+self.last_online+"\",  \""+str(devstate)+"\",  \""+str(devtype)+"\",  \""+str(usrid)+"\",  \""+str(envid)+"\")")
 			db.commit()
 		except Exception as e:
