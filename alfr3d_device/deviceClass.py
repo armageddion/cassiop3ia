@@ -58,6 +58,7 @@ DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
 DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
 DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
+KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 
 class Device:
 	"""
@@ -103,7 +104,7 @@ class Device:
 			cursor.execute("SELECT * from environment WHERE name = \""+self.environment+"\";")
 			data = cursor.fetchone()
 			envid = data[0]
-			cursor.execute("INSERT INTO device(name, IP, MAC, last_online, state_id, device_type_id, user_id, environment_id) \
+			cursor.execute("INSERT INTO device(name, IP, MAC, last_online, state, device_type_id, user_id, environment_id) \
 							VALUES (\""+self.name+"\", \""+self.IP+"\", \""+self.MAC+"\",  \""+self.last_online+"\",  \""+str(devstate)+"\",  \""+str(devtype)+"\",  \""+str(usrid)+"\",  \""+str(envid)+"\")")
 			db.commit()
 		except Exception as e:
@@ -288,13 +289,13 @@ if __name__ == '__main__':
 	# get all instructions from Kafka
 	# topic: device
 	try:
-		producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 	except Exception as e:
 		logger.error("Failed to connect to Kafka")
 		sys.exit()
 
 	try:
-		consumer = KafkaConsumer('device', bootstrap_servers='localhost:9092')
+		consumer = KafkaConsumer('device', bootstrap_servers=KAFKA_URL)
 	except Exception as e:
 		logger.error("Failed to connect to Kafka device topic")
 		producer.send("speak", b"Failed to connect to Kafka device topic")

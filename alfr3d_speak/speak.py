@@ -232,9 +232,10 @@ if __name__ == '__main__':
 	DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
 	DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 	DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
+	KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 
 	try:
-		consumer = KafkaConsumer('speak', bootstrap_servers='localhost:9092')
+		consumer = KafkaConsumer('speak', bootstrap_servers=KAFKA_URL)
 	except Exception as e:
 		speaker.speakString("Error")
 		speaker.speakString("Speaker agent was unable to connect to Kafka")

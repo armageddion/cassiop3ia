@@ -69,13 +69,14 @@ def getWeather(city="Toronto",country="CA"):
 	DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
 	DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 	DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
+	KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 
 	# connect to db
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 	cursor = db.cursor()
 	
 	# start kafka producer
-	producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 
 	logger.info("getting API key for openWeather from DB")
 	cursor.execute("SELECT * from config WHERE name = \"openWeather\";")
