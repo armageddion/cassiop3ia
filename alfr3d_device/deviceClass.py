@@ -176,7 +176,7 @@ class Device:
 			cursor.execute("SELECT * from states WHERE state = \"online\";")
 			data = cursor.fetchone()
 			stateid = data[0]
-			cursor.execute("UPDATE device SET state_id = \""+str(stateid)+"\" WHERE MAC = \""+self.MAC+"\";")
+			cursor.execute("UPDATE device SET state = \""+str(stateid)+"\" WHERE MAC = \""+self.MAC+"\";")
 			cursor.execute("SELECT * from environment WHERE name = \""+socket.gethostname()+"\";")
 			data = cursor.fetchone()
 			envid = data[0]
