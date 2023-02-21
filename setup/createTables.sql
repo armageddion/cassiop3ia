@@ -38,7 +38,7 @@ CREATE TABLE `device` (
   `IP` VARCHAR(15) NULL DEFAULT '10.0.0.125',
   `MAC` VARCHAR(17) NULL DEFAULT '00:00:00:00:00:00',
   `state` INTEGER(1) NULL DEFAULT 0,
-  `last_online` DATETIME NULL DEFAULT NULL,
+  `last_online` DATETIME NULL DEFAULT '1000-01-01 00:00:00',
   `environment_id` INTEGER NULL DEFAULT NULL,
   `device_type` INTEGER NULL DEFAULT NULL,
   `user_id` INTEGER NULL DEFAULT NULL,
@@ -80,7 +80,7 @@ DROP TABLE IF EXISTS `states`;
 		
 CREATE TABLE `states` (
   `id` INTEGER UNIQUE AUTO_INCREMENT,
-  `state` INTEGER(1) NULL DEFAULT 0,
+  `state` VARCHAR(8) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -142,17 +142,17 @@ ALTER TABLE `routines` ADD FOREIGN KEY (environment_id) REFERENCES `environment`
 -- ---
 -- set dome initial values 
 -- ---
-INSERT INTO `cassiop3ia`.`states` (`id`, `state`) VALUES ('1', 'offline');
-INSERT INTO `cassiop3ia`.`states` (`id`, `state`) VALUES ('2', 'online');
+INSERT INTO `alfr3d`.`states` (`id`, `state`) VALUES ('1', 'offline');
+INSERT INTO `alfr3d`.`states` (`id`, `state`) VALUES ('2', 'online');
 
-INSERT INTO `cassiop3ia`.`user_types` (`id`, `type`) VALUES ('1', 'technoking');
-INSERT INTO `cassiop3ia`.`user_types` (`id`, `type`) VALUES ('2', 'resident');
-INSERT INTO `cassiop3ia`.`user_types` (`id`, `type`) VALUES ('3', 'guest');
+INSERT INTO `alfr3d`.`user_types` (`id`, `type`) VALUES ('1', 'technoking');
+INSERT INTO `alfr3d`.`user_types` (`id`, `type`) VALUES ('2', 'resident');
+INSERT INTO `alfr3d`.`user_types` (`id`, `type`) VALUES ('3', 'guest');
 
-INSERT INTO `cassiop3ia`.`device_types` (`id`, `type`) VALUES ('1', 'alfr3d');
-INSERT INTO `cassiop3ia`.`device_types` (`id`, `type`) VALUES ('2', 'HW');
-INSERT INTO `cassiop3ia`.`device_types` (`id`, `type`) VALUES ('3', 'guest');
+INSERT INTO `alfr3d`.`device_types` (`id`, `type`) VALUES ('1', 'alfr3d');
+INSERT INTO `alfr3d`.`device_types` (`id`, `type`) VALUES ('2', 'HW');
+INSERT INTO `alfr3d`.`device_types` (`id`, `type`) VALUES ('3', 'guest');
 
-INSERT INTO `cassiop3ia`.`user` (`id`, `username`, `email`, `password_hash`, `about_me`, `last_online`, `state_id`, `user_type_id`, `environment_id`) VALUES ('1', 'athos', 'athos@littl31.com', '\'pbkdf2:sha256:260000$EVLamhqzR2ib572V$29ecaf8e9ef809496eebf2cc1dafc1c865e0efa0184a89dcca63492ced5290bf\'', '', '', '', '', '');
-INSERT INTO `cassiop3ia`.`user` (`id`, `username`, `email`, `password_hash`, `about_me`, `last_online`, `state_id`, `user_type_id`, `environment_id`) VALUES ('2', 'unknown', , '', '', '', '', '', '');
-INSERT INTO `cassiop3ia`.`environment` (`name`) VALUES ('test');
+INSERT INTO `alfr3d`.`user` (`id`, `username`, `email`, `password_hash`, `about_me`, `last_online`, `state`, `type`, `environment_id`) VALUES ('1', 'athos', 'athos@littl31.com', '\'pbkdf2:sha256:260000$EVLamhqzR2ib572V$29ecaf8e9ef809496eebf2cc1dafc1c865e0efa0184a89dcca63492ced5290bf\'', '', '1000-01-01 00:00:00', 1, 1, 1);
+INSERT INTO `alfr3d`.`user` (`id`, `username`, `email`, `password_hash`, `about_me`, `last_online`, `state`, `type`, `environment_id`) VALUES ('2', 'unknown', '', '', '', '1000-01-01 00:00:00', 1, 3, 1);
+INSERT INTO `alfr3d`.`environment` (`name`) VALUES ('test');
