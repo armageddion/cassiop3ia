@@ -94,11 +94,12 @@ def getWeather(lat,lon):
 
 	weatherData = None
 
-	url = "https://api.openweathermap.org/data/2.5/weather?lat="+str(lat)+",&lon="+str(lon)+'&units=metric&appid='+apikey
+	url = "https://api.openweathermap.org/data/2.5/weather?lat="+str(lat)+"&lon="+str(lon)+'&units=metric&appid='+apikey
 	try:
 		weatherData = json.loads(urlopen(url).read().decode('utf-8'))
 	except Exception as e:
 		logger.error("Failed to get weather data\n")
+		logger.error("URL: "+url)
 		logger.error("Traceback "+str(e))
 		return False, weatherData
 
