@@ -94,7 +94,7 @@ def getWeather(lat,lon):
 
 	weatherData = None
 
-	url = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+",&lon="+lon+'&units=metric&appid='+apikey
+	url = "https://api.openweathermap.org/data/2.5/weather?lat="+str(lat)+",&lon="+str(lon)+'&units=metric&appid='+apikey
 	try:
 		weatherData = json.loads(urlopen(url).read().decode('utf-8'))
 	except Exception as e:
@@ -102,7 +102,7 @@ def getWeather(lat,lon):
 		logger.error("Traceback "+str(e))
 		return False, weatherData
 
-	logger.info("got weather data for "+city+", "+country)
+	logger.info("got weather data")
 	logger.info(weatherData)		# DEBUG
 
 	#log current conditions
