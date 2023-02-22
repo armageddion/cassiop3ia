@@ -255,11 +255,11 @@ def init_daemon():
 
 	producer.send("speak", b"Systems check is complete")
 	if faults != 0:
-		logger.warn("Some startup faults were detected")
+		logger.warning("Some startup faults were detected")
 		producer.send("speak", b"Some faults were detected but system started successfully")
 		producer.send("speak", b"Total number of faults is "+str(faults))
 	else:
-		logger.warn("All systems are up and operational")
+		logger.info("All systems are up and operational")
 		producer.send("speak", b"All systems are up and operational")
 
 	return
