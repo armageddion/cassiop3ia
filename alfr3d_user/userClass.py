@@ -40,7 +40,6 @@ import socket
 import MySQLdb
 from kafka import KafkaConsumer,KafkaProducer
 from datetime import datetime, timedelta
-from cassiop3ia.alfr3d_device.deviceClass import Device
 
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
