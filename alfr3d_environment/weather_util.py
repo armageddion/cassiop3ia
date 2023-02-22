@@ -94,7 +94,7 @@ def getWeather(city="Toronto",country="CA"):
 
 	weatherData = None
 
-	url = "http://api.openweathermap.org/data/2.5/weather?q="+city+","+country+'&units=metric&appid='+apikey
+	url = "https://api.openweathermap.org/data/2.5/weather?q="+city+","+country+'&units=metric&appid='+apikey
 	try:
 		weatherData = json.loads(urlopen(url).read().decode('utf-8'))
 	except Exception as e:
