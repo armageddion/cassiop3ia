@@ -291,7 +291,7 @@ def refreshAll():
 			logger.info("User is offline")	#DEBUG
 			if user[5] == stat["online"]:
 				logger.info(user[1]+" went offline")
-				cursor.execute("UPDATE user SET state_id = "+str(stat['offline'])+" WHERE username = \""+user[1]+"\";")
+				cursor.execute("UPDATE user SET state = "+str(stat['offline'])+" WHERE username = \""+user[1]+"\";")
 				#nighttime_auto()			# this is only useful when alfr3d is left all alone
 
 		try:
