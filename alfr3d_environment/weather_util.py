@@ -55,6 +55,20 @@ handler = logging.FileHandler("/var/log/alfr3d/alfr3d.log")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# get main DB credentials
+DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
+DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
+DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
+DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
+KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
+
+producer = None
+try:
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+except Exception as e:
+	logger.error("Failed to connect to Kafka")
+	sys.exit()
+
 def getWeather(city="Toronto",country="CA"):
 	"""
 		Description:
@@ -62,19 +76,6 @@ def getWeather(city="Toronto",country="CA"):
 		Return:
 			Boolean; True if successful, False if not.
 	"""
-	# start kafka producer
-	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
-
-	# get API key for openWeather
-	logger.info("Getting weather data for "+city+", "+country)
-	producer.send("speak", b"Getting weather data for "+city+", "+country)
-	# get main DB credentials
-	DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
-	DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
-	DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
-	DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
-	KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
-
 	# connect to db
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 	cursor = db.cursor()
