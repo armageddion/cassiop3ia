@@ -258,12 +258,12 @@ def refreshAll():
 			devices = cursor.fetchall()
 			for device in devices:
 				# update last_online time for that user
-				if device[4] > user[6]:
+				if device[5] > user[6]:
 					logger.info("Updating user "+user[1])
-					cursor.execute("UPDATE user SET last_online = \""+str(device[4])+"\" WHERE username = \""+user[1]+"\";")
+					cursor.execute("UPDATE user SET last_online = \""+str(device[5])+"\" WHERE username = \""+user[1]+"\";")
 					cursor.execute("UPDATE user set environment_id = \""+str(env_id)+"\" WHERE username = \""+user[1]+"\";")
 					db.commit()
-					last_online = device[4]
+					last_online = device[5]
 		except Exception as  e:
 			logger.error("Failed to update the database")
 			logger.error("Traceback: "+str(e))

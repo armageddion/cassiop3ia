@@ -3,7 +3,7 @@
 from kafka import KafkaProducer
 import time
 
-producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+producer = KafkaProducer(bootstrap_servers=['192.168.1.100:9092'])
 
 producer.send("user", b"refresh-all")
 time.sleep(5)
