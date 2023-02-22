@@ -69,7 +69,7 @@ except Exception as e:
 	logger.error("Failed to connect to Kafka")
 	sys.exit()
 
-def getWeather(city="Toronto",country="CA"):
+def getWeather(lat,lon):
 	"""
 		Description:
 			This function gets weather data and parses it.
@@ -86,7 +86,7 @@ def getWeather(city="Toronto",country="CA"):
 
 	if data:
 		logger.info("Found API key")
-		print(data) 	#DEBUG
+		#print(data) 	#DEBUG
 		apikey = data[2]
 	else:
 		logger.warning("Failed to get API key for openWeather")  
@@ -94,7 +94,7 @@ def getWeather(city="Toronto",country="CA"):
 
 	weatherData = None
 
-	url = "https://api.openweathermap.org/data/2.5/weather?q="+city+","+country+'&units=metric&appid='+apikey
+	url = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+",&lon="+lon+'&units=metric&appid='+apikey
 	try:
 		weatherData = json.loads(urlopen(url).read().decode('utf-8'))
 	except Exception as e:

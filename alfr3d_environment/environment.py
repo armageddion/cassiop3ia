@@ -279,11 +279,11 @@ def checkLocation(method="freegeoip"):
 	# get latest weather info for new location
 	try:
 		logger.info("Getting latest weather")
-		weather_util.getWeather(city_new, country_new)
+		weather_util.getWeather(lat_new, long_new)
 	except Exception as e:
 		logger.error("Failed to get weather")
 		logger.error("Traceback "+str(e))
-	return [True, city_new, country_new]
+	return 
 
 # Main
 if __name__ == '__main__':
