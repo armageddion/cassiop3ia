@@ -284,7 +284,7 @@ def refreshAll():
 			if user[5] == stat["offline"]:
 				logger.info(user[1]+" just came online")
 				# welcome the user
-				cursor.execute("UPDATE user SET state_id = "+str(stat['online'])+" WHERE username = \""+user[1]+"\";")
+				cursor.execute("UPDATE user SET state = "+str(stat['online'])+" WHERE username = \""+user[1]+"\";")
 				#nighttime_auto()	# turn on the lights
 				# speak welcome
 		else:

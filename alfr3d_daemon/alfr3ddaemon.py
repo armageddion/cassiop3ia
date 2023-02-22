@@ -92,7 +92,12 @@ class MyDaemon(Daemon):
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Check online members
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-			producer.send("device", b"scan net")
+			try:
+				logger.info("Time for localnet scan")
+				producer.send("device", b"scan net")
+			except Exception as e:
+				logger.error("Failed to perform localnet scan")
+				logger.error("Traceback: "+str(e))
 
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Things to do only during waking hours and only when
@@ -226,8 +231,6 @@ def init_daemon():
 			initialize alfr3d services
 	"""
 	logger.info("Initializing systems check")
-
-	logger.info("Connecting to Kafka")
 
 	producer.send("speak", b"Initializing systems checks")
 
