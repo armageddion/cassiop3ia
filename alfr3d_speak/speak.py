@@ -44,7 +44,7 @@ from random import randint				# used for random number generator
 CURRENT_PATH = os.path.dirname(__file__)
 
 # set up logging
-logger = logging.getLogger("DevicesLog")
+logger = logging.getLogger("SpeakLog")
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 #handler = logging.FileHandler(os.path.join(CURRENT_PATH,"../log/devices.log"))

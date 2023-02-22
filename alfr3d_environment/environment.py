@@ -62,6 +62,13 @@ DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
 KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 
+producer = None
+try:
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+except Exception as e:
+	logger.error("Failed to connect to Kafka")
+	sys.exit()
+
 #def checkLocation(method="freegeoip", speaker=None):
 def checkLocation(method="freegeoip"):
 	"""
@@ -282,12 +289,6 @@ def checkLocation(method="freegeoip"):
 if __name__ == '__main__':
 	# get all instructions from Kafka
 	# topic: environment
-	try:
-		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
-	except Exception as e:
-		logger.error("Failed to connect to Kafka")
-		sys.exit()
-
 	try:
 		consumer = KafkaConsumer('environment', bootstrap_servers=KAFKA_URL)
 	except Exception as e:
