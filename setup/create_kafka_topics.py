@@ -5,6 +5,7 @@ admin_client = KafkaAdminClient(
     bootstrap_servers="localhost:9092", 
     client_id='setup'
 )
+admin_client.delete_topics(['speak','environment','device','user'])
 
 topic_list = [NewTopic(name="speak", num_partitions=1, replication_factor=1),
               NewTopic(name="environment", num_partitions=1, replication_factor=1),

@@ -93,12 +93,13 @@ class MyDaemon(Daemon):
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Check online members
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-			try:
-				logger.info("Time for localnet scan")
-				producer.send("device", b"scan net")
-			except Exception as e:
-				logger.error("Failed to perform localnet scan")
-				logger.error("Traceback: "+str(e))
+			#try:
+			logger.info("Time for localnet scan")
+			producer.send("device", b"scan net")
+			producer.flush()
+			# except Exception as e:
+			# 	logger.error("Failed to perform localnet scan")
+			# 	logger.error("Traceback: "+str(e))
 
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Things to do only during waking hours and only when
@@ -236,14 +237,14 @@ def init_daemon():
 	logger.info("Initializing systems check")
 
 	producer.send("speak", b"Initializing systems checks")
-	time.sleep(5)
+	producer.flush()
 
 	faults = 0
 
 	# initial geo check
 	logger.info("Running a geoscan")
 	producer.send("environment", b"check location")
-	time.sleep(5)
+	producer.flush()
 
 	# set up some routine schedules
 	try:
@@ -265,13 +266,13 @@ def init_daemon():
 	if faults != 0:
 		logger.warning("Some startup faults were detected")
 		producer.send("speak", b"Some faults were detected but system started successfully")
-		time.sleep(5)
+		producer.flush()
 		producer.send("speak", b"Total number of faults is "+str(faults))
-		time.sleep(5)
+		producer.flush()
 	else:
 		logger.info("All systems are up and operational")
 		producer.send("speak", b"All systems are up and operational")
-		time.sleep(5)
+		producer.flush()
 
 	return
 
