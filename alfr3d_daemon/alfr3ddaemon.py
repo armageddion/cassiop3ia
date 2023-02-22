@@ -77,6 +77,13 @@ handler = logging.FileHandler("/var/log/alfr3d/alfr3d.log")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+producer = None
+try:
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+except Exception as e:
+	logger.error("Failed to connect to Kafka server")
+	logger.error("Traceback: "+str(e))
+	sys.exit(1)
 
 class MyDaemon(Daemon):
 	def run(self):
@@ -85,7 +92,7 @@ class MyDaemon(Daemon):
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Check online members
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
+			producer.send("device", b"scan net")
 
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Things to do only during waking hours and only when
@@ -113,7 +120,7 @@ class MyDaemon(Daemon):
 					logger.error("Traceback: "+str(e))
 
 			# OK Take a break
-			time.sleep(10)
+			time.sleep(60)
 
 	def checkGmail(self, speaker):
 		"""
@@ -221,13 +228,6 @@ def init_daemon():
 	logger.info("Initializing systems check")
 
 	logger.info("Connecting to Kafka")
-	producer = None
-	try:
-		producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-	except Exception as e:
-		logger.error("Failed to connect to Kafka server")
-		logger.error("Traceback: "+str(e))
-		sys.exit(1)
 
 	producer.send("speak", b"Initializing systems checks")
 

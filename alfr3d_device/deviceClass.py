@@ -291,7 +291,9 @@ def checkLAN():
 			device.create(member)
 
 	logger.info("Cleaning up temporary files")
-	os.system('rm -rf '+netclientsfile)			
+	os.system('rm -rf '+netclientsfile)
+
+	producer.send("user", b"refresh-all")
 
 if __name__ == '__main__':
 	# get all instructions from Kafka
