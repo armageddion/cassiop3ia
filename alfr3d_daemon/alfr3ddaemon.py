@@ -80,6 +80,7 @@ logger.addHandler(handler)
 producer = None
 try:
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+	producer.send('speak', b'starting alfr3d daemon')
 except Exception as e:
 	logger.error("Failed to connect to Kafka server")
 	logger.error("Traceback: "+str(e))
@@ -113,6 +114,7 @@ class MyDaemon(Daemon):
 				# ramble quips every once in a while
 				try:
 					logger.info("Is it time for a smartass quip?")
+					## Do a quip
 				except Exception as e:
 					logger.error("Failed to complete the quip block")
 					logger.error("Traceback: "+str(e))
@@ -120,6 +122,7 @@ class MyDaemon(Daemon):
 				# check emails
 				try:
 					logger.info("Checking Gmail")
+					# Check gmail
 				except Exception as e:
 					logger.error("Failed to check Gmail")
 					logger.error("Traceback: "+str(e))
