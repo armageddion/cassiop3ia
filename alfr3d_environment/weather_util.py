@@ -62,8 +62,12 @@ def getWeather(city="Toronto",country="CA"):
 		Return:
 			Boolean; True if successful, False if not.
 	"""
+	# start kafka producer
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+
 	# get API key for openWeather
 	logger.info("Getting weather data for "+city+", "+country)
+	producer.send("speak", b"Getting weather data for "+city+", "+country)
 	# get main DB credentials
 	DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
 	DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
@@ -74,9 +78,6 @@ def getWeather(city="Toronto",country="CA"):
 	# connect to db
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 	cursor = db.cursor()
-	
-	# start kafka producer
-	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 
 	logger.info("getting API key for openWeather from DB")
 	cursor.execute("SELECT * from config WHERE name = \"openWeather\";")

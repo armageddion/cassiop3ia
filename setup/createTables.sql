@@ -127,6 +127,19 @@ CREATE TABLE `environment` (
 );
 
 -- ---
+-- Table 'config'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `config`;
+		
+CREATE TABLE `config` (
+  `id` INTEGER UNIQUE AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL DEFAULT NULL,
+  `value` VARCHAR(45) NULL DEFAULT NULL
+);
+
+-- ---
 -- Foreign Keys 
 -- ---
 

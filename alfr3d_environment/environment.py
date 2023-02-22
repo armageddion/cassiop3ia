@@ -68,6 +68,7 @@ def checkLocation(method="freegeoip"):
 		Check location based on IP
 	"""
 	logger.info("Checking environment info")
+	producer.send("speak", b"Checking environment info")
 	# get latest DB environment info
 	# Initialize the database
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
@@ -106,6 +107,7 @@ def checkLocation(method="freegeoip"):
 	except Exception as e:
 		logger.error("Environment check failed")
 		logger.error("Traceback "+str(e))
+		producer.send("speak", b"Environment check failed")
 
 	# placeholders for my ip
 	myipv4 = None
@@ -243,9 +245,9 @@ def checkLocation(method="freegeoip"):
 
 	if city_new == city:
 		logger.info("You are still in the same location")
+		producer.send("speak", b"It would appear that I am in the same location as the last time")
 	else:
 		logger.info("Oh hello! Welcome to "+city_new)
-		producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
 		producer.send("speak", b"Welcome to "+city_new.encode('utf-8')+b" sir")
 		producer.send("speak", b"I trust you enjoyed your travels")		
 
@@ -276,7 +278,7 @@ def checkLocation(method="freegeoip"):
 		logger.error("Traceback "+str(e))
 	return [True, city_new, country_new]
 
-# Main - only really used for testing
+# Main
 if __name__ == '__main__':
 	# get all instructions from Kafka
 	# topic: environment

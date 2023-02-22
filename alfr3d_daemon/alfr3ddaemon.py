@@ -38,6 +38,7 @@ import sys
 import schedule					# 3rd party lib used for alarm clock managment.
 from daemon import Daemon
 from random import randint		# used for random number generator
+from kafka import KafkaProducer # user to write messages to Kafka
 
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
@@ -80,13 +81,6 @@ logger.addHandler(handler)
 class MyDaemon(Daemon):
 	def run(self):
 		while True:
-			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-				Logging Examples:
-				logger.debug("Debug message")
-				logger.info("Info message")
-				logger.warn("Warning message")
-				logger.error("Error message")
-			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Check online members
@@ -104,6 +98,7 @@ class MyDaemon(Daemon):
 					Things to do only during waking hours and only when
 					god is in tha house
 				"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+				# ramble quips every once in a while
 				try:
 					logger.info("Is it time for a smartass quip?")
 				except Exception as e:
@@ -141,7 +136,6 @@ class MyDaemon(Daemon):
 				"Pardon the interruption sir. Another email has arrived for you to ignore."]
 
 			tempint = randint(1,len(email_quips))
-			#speaker.speakString(email_quips[tempint-1])
 
 		if (UNREAD_COUNT_NEW != 0):
 			logger.info("Unread count: "+str(UNREAD_COUNT_NEW))
@@ -187,7 +181,6 @@ def sunriseRoutine():
 		Description:
 			sunset routine - perform this routine 30 minutes before sunrise
 			giving the users time to go see sunrise
-			### TO DO - figure out scheduling
 	"""
 	logger.info("Pre-sunrise routine")
 
@@ -226,27 +219,23 @@ def init_daemon():
 			initialize alfr3d services
 	"""
 	logger.info("Initializing systems check")
-	#initSpeaker = utilities.Speaker()
-	#initSpeaker.speakString("Initializing systems check")
 
-	# check and create god user if it doesn't exist
-	#user = utilities.User()
-	#user.first()
+	logger.info("Connecting to Kafka")
+	producer = None
+	try:
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+	except Exception as e:
+		logger.error("Failed to connect to Kafka server")
+		logger.error("Traceback: "+str(e))
+		sys.exit(1)
+
+	producer.send("speak", b"Initializing systems checks")
 
 	faults = 0
 
 	# initial geo check
-	try:
-		#initSpeaker.speakString("Running geo scan")
-		logger.info("Running a geoscan")
-		#ret = utilities.checkLocation("freegeoip", speaker=initSpeaker)
-		#if not ret[0]:
-		#	raise Exception("Geo scan failed")
-		#initSpeaker.speakString("Geo scan complete")
-	except Exception as e:
-		logger.error("Failed to complete geoscan scan")
-		logger.error("Traceback: "+str(e))
-		faults+=1
+	logger.info("Running a geoscan")
+	producer.send("environment", b"check location")
 
 	# set up some routine schedules
 	try:
@@ -264,20 +253,20 @@ def init_daemon():
 		logger.error("Traceback: "+str(e))
 		faults+=1												# bump up fault counter
 
-	#initSpeaker.speakString("Systems check complete")
+	producer.send("speak", b"Systems check is complete")
 	if faults != 0:
 		logger.warn("Some startup faults were detected")
-		#initSpeaker.speakString("Some faults were detected but system started successfully")
-		#initSpeaker.speakString("Total number of faults is "+str(faults))
+		producer.send("speak", b"Some faults were detected but system started successfully")
+		producer.send("speak", b"Total number of faults is "+str(faults))
 	else:
 		logger.warn("All systems are up and operational")
-		#initSpeaker.speakString("All systems are up and operational")
+		producer.send("speak", b"All systems are up and operational")
 
 	return
 
 if __name__ == "__main__":
 	#daemon = MyDaemon('/var/run/b3nadaemon/b3nadaemon.pid',stderr='/dev/null')
-	daemon = MyDaemon('/var/run/b3nadaemon/b3nadaemon.pid',stderr='/dev/stderr')
+	daemon = MyDaemon('/var/run/alfr3ddaemon/alfr3ddaemon.pid',stderr='/dev/stderr')
 	if len(sys.argv) == 2:
 		if 'start' == sys.argv[1]:
 			logger.info("Alfr3d Daemon initializing")

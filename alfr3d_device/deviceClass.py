@@ -60,6 +60,13 @@ DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
 KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 
+producer = None
+try:
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+except Exception as e:
+	logger.error("Failed to connect to Kafka")
+	sys.exit()
+
 class Device:
 	"""
 		Device Class for Alfr3d Users' devices
@@ -74,7 +81,7 @@ class Device:
 	deviceType = 'guest'
 
 	# mandatory to pass MAC for robustness
-	def newDevice(self, mac):
+	def create(self, mac):
 		"""
 			Description:
 				Add new device to the database with default parameters
@@ -115,9 +122,10 @@ class Device:
 			return False
 
 		db.close()
+		producer.send("speak", b"A new device was added to the database")
 		return True
 
-	def getDevice(self,mac):
+	def get(self,mac):
 		"""
 			Description:
 				Find device from DB by MAC
@@ -200,7 +208,7 @@ class Device:
 			Description:
 				Delete a Device from DB
 		"""				
-		logger.info("Updating device")
+		logger.info("Deleting device")
 		db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 		cursor = db.cursor()
 		cursor.execute("SELECT * from device WHERE MAC = \""+self.MAC+"\";")
@@ -267,7 +275,7 @@ def checkLAN():
 	for member in netClientsMACs:
 		print(member)
 		device = Device()
-		exists = device.getDevice(member)
+		exists = device.get(member)
 
 		#if device exists in the DB update it
 		if exists:
@@ -280,7 +288,7 @@ def checkLAN():
 			logger.info("Creating a new DB entry for device with MAC: "+member)
 			device.IP = netClients2[member]
 			device.MAC = member
-			device.newDevice(member)
+			device.create(member)
 
 	logger.info("Cleaning up temporary files")
 	os.system('rm -rf '+netclientsfile)			
@@ -288,12 +296,6 @@ def checkLAN():
 if __name__ == '__main__':
 	# get all instructions from Kafka
 	# topic: device
-	try:
-		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
-	except Exception as e:
-		logger.error("Failed to connect to Kafka")
-		sys.exit()
-
 	try:
 		consumer = KafkaConsumer('device', bootstrap_servers=KAFKA_URL)
 	except Exception as e:
