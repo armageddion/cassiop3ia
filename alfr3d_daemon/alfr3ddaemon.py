@@ -80,7 +80,7 @@ logger.addHandler(handler)
 producer = None
 try:
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-	producer.send('speak', b'starting alfr3d daemon')
+	#producer.send('speak', b'starting alfr3d daemon')
 except Exception as e:
 	logger.error("Failed to connect to Kafka server")
 	logger.error("Traceback: "+str(e))
@@ -236,12 +236,14 @@ def init_daemon():
 	logger.info("Initializing systems check")
 
 	producer.send("speak", b"Initializing systems checks")
+	time.sleep(5)
 
 	faults = 0
 
 	# initial geo check
 	logger.info("Running a geoscan")
 	producer.send("environment", b"check location")
+	time.sleep(5)
 
 	# set up some routine schedules
 	try:
@@ -263,10 +265,13 @@ def init_daemon():
 	if faults != 0:
 		logger.warning("Some startup faults were detected")
 		producer.send("speak", b"Some faults were detected but system started successfully")
+		time.sleep(5)
 		producer.send("speak", b"Total number of faults is "+str(faults))
+		time.sleep(5)
 	else:
 		logger.info("All systems are up and operational")
 		producer.send("speak", b"All systems are up and operational")
+		time.sleep(5)
 
 	return
 
