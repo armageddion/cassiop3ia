@@ -115,19 +115,19 @@ class User:
 		producer.send("speak", b"A new user has been added to the database")
 		return True
 
-	def get(self, name):
+	def get(self):
 		"""
             Description:
                 Find a user from DB by name
         """
-		logger.info("Looking for user: " + name)
+		logger.info("Looking for user: " + self.name)
 		db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 		cursor = db.cursor()
-		cursor.execute("SELECT * from user WHERE username = \""+name+"\";")
+		cursor.execute("SELECT * from user WHERE username = \""+self.name+"\";")
 		data = cursor.fetchone()
 
 		if not data:
-			logger.warn("Failed to find user: " +name+ " in the database")
+			logger.warn("Failed to find user: " +self.name+ " in the database")
 			db.close()
 			return False
 
@@ -317,11 +317,19 @@ if __name__ == '__main__':
 
 	while True:
 		for message in consumer:
-			if message.value.decode('ascii') == "refresh-all":
-				refreshAll()
 			if message.value.decode('ascii') == "alfr3d-user.exit":
 				logger.info("Received exit request. Stopping service.")
 				sys.exit(1)
+			if message.value.decode('ascii') == "refresh-all":
+				refreshAll()
+			if message.key.decode('ascii') == "create":
+				usr = User()
+				usr.name = message.value.decode('ascii')
+				usr.create()
+			if message.key.decode('ascii') == "delete":
+				usr = User()
+				usr.name = message.value.decode('ascii')
+				usr.delete()	
 
 			time.sleep(10)
 			
