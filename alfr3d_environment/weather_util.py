@@ -57,7 +57,7 @@ logger.addHandler(handler)
 
 # get main DB credentials
 DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
-DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
+DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'alfr3d'
 DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
 KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'

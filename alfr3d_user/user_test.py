@@ -9,11 +9,11 @@ producer.send("user", b"refresh-all")
 time.sleep(5)
 
 # create a test user
-producer.send("user", value="test_user", key="create")
+producer.send("user", value=b"test_user", key=b"create")
 producer.flush()
 
 # delete the test user
-producer.send("user", value="test_user", key="delete")
+producer.send("user", value=b"test_user", key=b"delete")
 producer.flush()
 
 producer.send("user", value=b"alfr3d-user.exit")
