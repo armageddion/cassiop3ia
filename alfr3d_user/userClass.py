@@ -98,7 +98,7 @@ class User:
 			cursor.execute("SELECT * from user_types WHERE type = \"guest\";")
 			data = cursor.fetchone()
 			usrtype = data[0]
-			cursor.execute("SELECT * from environment WHERE name = \""+self.environment+"\";")
+			cursor.execute("SELECT * from environment WHERE name = \""+socket.gethostname()+"\";")
 			data = cursor.fetchone()
 			envid = data[0]			
 			cursor.execute("INSERT INTO user(username, last_online, state, type, environment_id) \
