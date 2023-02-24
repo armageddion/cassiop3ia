@@ -96,18 +96,15 @@ class MyDaemon(Daemon):
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 			#try:
 			logger.info("Time for localnet scan")
-			producer.send("device", b"scan net")
+			r=producer.send("device", b"scan net")
 
 			# Block for 'synchronous' sends
 			try:
-				record_metadata = future.get(timeout=10)
+				record_metadata = r.get(timeout=10)
 			except KafkaError as e:
 				# Decide what to do if produce request failed...
 				logger.error("Kafka error: "+str(e))
 				pass
-			# except Exception as e:
-			# 	logger.error("Failed to perform localnet scan")
-			# 	logger.error("Traceback: "+str(e))
 
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Things to do only during waking hours and only when
