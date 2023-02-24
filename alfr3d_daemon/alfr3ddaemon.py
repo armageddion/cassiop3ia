@@ -80,7 +80,7 @@ logger.addHandler(handler)
 producer = None
 try:
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-	producer.send('speak', b'starting alfr3d daemon')
+	#producer.send('speak', b'starting alfr3d daemon')
 except Exception as e:
 	logger.error("Failed to connect to Kafka server")
 	logger.error("Traceback: "+str(e))
@@ -243,8 +243,8 @@ def init_daemon():
 
 	# initial geo check
 	logger.info("Running a geoscan")
-	#producer.send("environment", b"check location")
-	#producer.flush()
+	producer.send("environment", b"check location")
+	producer.flush()
 
 	# set up some routine schedules
 	try:
