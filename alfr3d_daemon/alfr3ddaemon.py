@@ -39,6 +39,7 @@ import schedule					# 3rd party lib used for alarm clock managment.
 from daemon import Daemon
 from random import randint		# used for random number generator
 from kafka import KafkaProducer # user to write messages to Kafka
+from kafka.errors import KafkaError
 
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
@@ -96,7 +97,14 @@ class MyDaemon(Daemon):
 			#try:
 			logger.info("Time for localnet scan")
 			producer.send("device", b"scan net")
-			producer.flush()
+
+			# Block for 'synchronous' sends
+			try:
+				record_metadata = future.get(timeout=10)
+			except KafkaError as e:
+				# Decide what to do if produce request failed...
+				logger.error("Kafka error: "+str(e))
+				pass
 			# except Exception as e:
 			# 	logger.error("Failed to perform localnet scan")
 			# 	logger.error("Traceback: "+str(e))
@@ -237,7 +245,7 @@ def init_daemon():
 	"""
 	logger.info("Initializing systems check")
 
-	#producer.send("speak", b"Initializing systems checks")
+	producer.send("speak", b"Initializing systems checks")
 	#producer.flush()
 
 	faults = 0
@@ -262,7 +270,7 @@ def init_daemon():
 		logger.error("Traceback: "+str(e))
 		faults+=1												# bump up fault counter
 
-	#producer.send("speak", b"Systems check is complete")
+	producer.send("speak", b"Systems check is complete")
 	if faults != 0:
 		logger.warning("Some startup faults were detected")
 		#producer.send("speak", b"Some faults were detected but system started successfully")
