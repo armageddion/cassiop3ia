@@ -46,7 +46,7 @@ CURRENT_PATH = os.path.dirname(__file__)
 
 # set up daemon things
 os.system('sudo mkdir -p /var/run/alfr3ddaemon')
-#os.system('sudo chown alfr3d:alfr3d /var/run/alfr3ddaemon')
+os.system('sudo chown alfr3d:alfr3d /var/run/alfr3ddaemon')
 
 # get main DB credentials
 DATABASE_URL 	= os.environ.get('DATABASE_URL') or "localhost"
@@ -106,7 +106,8 @@ class MyDaemon(Daemon):
 				god or owner is in tha house
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 			logger.info("Checking if mute")
-			mute = False
+			# TODO check if mute
+			mute = False	# temp
 			if not mute:
 				"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 					Things to do only during waking hours and only when
@@ -244,7 +245,6 @@ def init_daemon():
 	# initial geo check
 	logger.info("Running a geoscan")
 	producer.send("environment", b"check location")
-	producer.flush()
 
 	# set up some routine schedules
 	try:
