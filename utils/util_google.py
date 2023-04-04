@@ -157,7 +157,7 @@ def getUnreadCount():
 		quip = quip_data[randint(1,len(quip_data))][2]
 
 		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
-		producer.send("speak", bytes(quip))
+		producer.send("speak", bytes(quip,'utf-8'))
 
 		UNREAD_COUNT = unread_msgs
 
