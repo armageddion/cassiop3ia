@@ -37,6 +37,7 @@ import time
 import datetime
 import logging
 import MySQLdb
+from random import randint		# used for random number generator
 from kafka import KafkaConsumer,KafkaProducer
 
 from googleapiclient.discovery import build
