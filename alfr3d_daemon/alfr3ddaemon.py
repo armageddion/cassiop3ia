@@ -139,7 +139,7 @@ class MyDaemon(Daemon):
 			# OK Take a break
 			time.sleep(60)
 
-	def checkGmail(self, speaker):
+	def checkGmail(self):
 		"""
 			Description:
 				Checks the unread count in gMail
@@ -164,7 +164,7 @@ class MyDaemon(Daemon):
 		if (UNREAD_COUNT_NEW != 0):
 			logger.info("Unread count: "+str(UNREAD_COUNT_NEW))
 
-	def beSmart(self, speaker):
+	def beSmart(self):
 		"""
 			Description:
 				speak a quip
