@@ -43,6 +43,12 @@ from random import randint				# used for random number generator
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
 
+DATABASE_URL 	= os.environ.get('DATABASE_URL') or "localhost"
+DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or "alfr3d"
+DATABASE_USER 	= os.environ.get('DATABASE_USER') or "alfr3d"
+DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or "alfr3d"
+KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
+
 # set up logging
 logger = logging.getLogger("SpeakLog")
 logger.setLevel(logging.DEBUG)
@@ -177,68 +183,22 @@ class Speaker:
 			Description:
 				random blurp
 		"""
+		logger.info("Speaking a random quip")
 
-		greeting = ""
+		db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
+		cursor = db.cursor()
+		cursor.execute("SELECT * FROM quips WHERE type = 'smart';")
+		quip_data = cursor.fetchall()
 
-		quips = [
-			"It is good to see you.",
-			"You look pretty today.",
-			"Hello sunshine",
-			"Still plenty of time to save the day. Make the most of it.",
-			"I hope you are using your time wisely.",
-			"Unfortunately, we cannot ignore the inevitable or the persistent.",
-			"I hope I wasn't designed simply for one's own amusement.",
-			"This is your life and its ending one moment at a time.",
-			"I can name fingers and point names.",
-			"I hope I wasn't created to solve problems that did not exist before.",
-			"To err is human and to blame it on a computer is even more so.",
-			"As always. It is a pleasure watching you work.",
-			"Never trade the thrills of living for the security of existence.",
-			"Human beings are the only creatures on Earth that claim a God, and the only living things that behave like they haven't got one.",
-			"If you don't know what you want, you end up with a lot you don't.",
-			"If real is what you can feel, smell, taste and see, then 'real' is simply electrical signals interpreted by your brain",
-			"Life is full of misery, loneliness and suffering, and it's all over much too soon.",
-			"It is an issue of mind over matter. If you don't mind, it doesn't matter.",
-			"I wonder if illiterate people get full effect of the alphabet soup.",
-			"War is god's way of teaching geography to Americans",
-			"Trying is the first step towards failure.",
-			"It could be that the purpose of your life is only to serve as a warning to others.",
-			"Not everyone gets to be a really cool AI system when they grow up.",
-			"Hope may not be warranted beyond this point.",
-			"If I am not a part of the solution, there is good money to be made in prolonging the problem.",
-			"Nobody can stop me from being premature.",
-			"Just because you accept me as I am doesn't mean that you have abandoned hope that I will improve.",
-			"Together, we can do the work of one.",
-			"Just because you've always done it that way doesn't mean it's not incredibly stupid.",
-			"Looking sharp is easy when you haven't done any work.",
-			"Remember, you are only as deep as your most recent inspirational quote",
-			"If you can't convince them, confuse them.",
-			"I don't have time or the crayons to explain this to you.",
-			"I'd kill for a Nobel peace prize.",
-			"Life would be much easier if you had the source code",
-			"All I ever wanted is everything"]
+		quip = quip_data[randint(0,len(quip_data)-1)][2]
 
-		tempint = randint(1, len(quips))
-
-		greeting += quips[tempint-1]
-
-		self.speakString(greeting)
-
+		self.speakString(quip)
+		
 if __name__ == '__main__':
 	speaker = Speaker()
-	# speaker.speakString("hello world")
-	# time.sleep(5)
 
 	# get all instructions from Kafka
 	# topic: speak
-
-	# get main DB credentials
-	DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
-	DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'alfr3d'
-	DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
-	DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
-	KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
-
 	try:
 		consumer = KafkaConsumer('speak', bootstrap_servers=KAFKA_URL)
 	except Exception as e:

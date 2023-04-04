@@ -112,7 +112,7 @@ class User:
 			return False
 
 		db.close()
-		producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 		producer.send("speak", b"A new user has been added to the database")
 		return True
 
@@ -280,11 +280,11 @@ def refreshAll():
 			logger.error("Failed to figure out the timedelta")
 			delta = timedelta(minutes=60)
 
-		if delta < timedelta(minutes=30):	# 30 minutes
+		if delta > timedelta(minutes=30):	# 30 minutes
 			logger.info("User is online")	#DEBUG
 			if user[5] == stat["offline"]:
 				logger.info(user[1]+" just came online")
-				producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+				producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 				producer.send("speak", bytes(user[1]+" just came online",'utf-8')) ## temp until greeting
 				# welcome the user
 				cursor.execute("UPDATE user SET state = "+str(stat['online'])+" WHERE username = \""+user[1]+"\";")
@@ -295,6 +295,7 @@ def refreshAll():
 			if user[5] == stat["online"]:
 				logger.info(user[1]+" went offline")
 				cursor.execute("UPDATE user SET state = "+str(stat['offline'])+" WHERE username = \""+user[1]+"\";")
+				cursor.execute("UPDATE device SET state = "+str(stat['offline'])+" WHERE user_id = \""+user[0]+"\";")
 				#nighttime_auto()			# this is only useful when alfr3d is left all alone
 
 		try:
