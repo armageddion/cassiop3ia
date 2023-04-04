@@ -96,6 +96,7 @@ class MyDaemon(Daemon):
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 			#try:
 			logger.info("Time for localnet scan")
+			producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
 			r=producer.send("device", b"scan net")
 
 			# Block for 'synchronous' sends
@@ -122,6 +123,7 @@ class MyDaemon(Daemon):
 				try:
 					logger.info("Is it time for a smartass quip?")
 					## Do a quip
+					self.beSmart()
 				except Exception as e:
 					logger.error("Failed to complete the quip block")
 					logger.error("Traceback: "+str(e))
@@ -173,7 +175,8 @@ class MyDaemon(Daemon):
 		if time.time() - QUIP_START_TIME > QUIP_WAIT_TIME*60:
 			logger.info("It is time to be a smartass")
 
-			#speaker.speakRandom()
+			producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+			producer.send("speak", b"alfr3d-speak.random")
 
 			QUIP_START_TIME = time.time()
 			QUIP_WAIT_TIME = randint(10,50)
@@ -241,6 +244,7 @@ def init_daemon():
 			initialize alfr3d services
 	"""
 	logger.info("Initializing systems check")
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
 
 	producer.send("speak", b"Initializing systems checks")
 	#producer.flush()
@@ -270,13 +274,13 @@ def init_daemon():
 	producer.send("speak", b"Systems check is complete")
 	if faults != 0:
 		logger.warning("Some startup faults were detected")
-		#producer.send("speak", b"Some faults were detected but system started successfully")
+		producer.send("speak", b"Some faults were detected but system started successfully")
 		#producer.flush()
 		#producer.send("speak", b"Total number of faults is "+str(faults))
 		#producer.flush()
 	else:
 		logger.info("All systems are up and operational")
-		#producer.send("speak", b"All systems are up and operational")
+		producer.send("speak", b"All systems are up and operational")
 		#producer.flush()
 
 	return

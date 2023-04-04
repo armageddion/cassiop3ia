@@ -112,6 +112,7 @@ class User:
 			return False
 
 		db.close()
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
 		producer.send("speak", b"A new user has been added to the database")
 		return True
 
@@ -283,6 +284,8 @@ def refreshAll():
 			logger.info("User is online")	#DEBUG
 			if user[5] == stat["offline"]:
 				logger.info(user[1]+" just came online")
+				producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+				producer.send("speak", bytes(user[1]+" just came online",'utf-8')) ## temp until greeting
 				# welcome the user
 				cursor.execute("UPDATE user SET state = "+str(stat['online'])+" WHERE username = \""+user[1]+"\";")
 				#nighttime_auto()	# turn on the lights
