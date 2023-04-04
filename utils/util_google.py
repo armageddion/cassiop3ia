@@ -154,7 +154,7 @@ def getUnreadCount():
 		cursor.execute("SELECT * FROM quips WHERE type = 'email';")
 		quip_data = cursor.fetchall()
 
-		quip = quip_data[randint(1,len(quip_data))][2]
+		quip = quip_data[randint(0,len(quip_data)-1)][2]
 
 		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 		producer.send("speak", bytes(quip,'utf-8'))

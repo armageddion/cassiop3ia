@@ -56,10 +56,6 @@ DATABASE_USER 	= os.environ.get('DATABASE_USER') or "alfr3d"
 DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or "alfr3d"
 KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 
-# gmail unread count
-UNREAD_COUNT = 0
-UNREAD_COUNT_NEW = 0
-
 # time of sunset/sunrise - defaults
 # SUNSET_TIME = datetime.datetime.now().replace(hour=19, minute=0)
 # SUNRISE_TIME = datetime.datetime.now().replace(hour=6, minute=30)
@@ -68,8 +64,6 @@ UNREAD_COUNT_NEW = 0
 # various counters to be used for pacing spreadout functions
 QUIP_START_TIME = time.time()
 QUIP_WAIT_TIME = randint(5,10)
-
-KAFKA_URL = os.environ.get('KAFKA_URL') or 'localhost:9092'
 
 # set up logging
 logger = logging.getLogger("DaemonLog")
@@ -145,26 +139,9 @@ class MyDaemon(Daemon):
 				Checks the unread count in gMail
 		"""
 		logger.info("Checking email")
-		global UNREAD_COUNT
-		global UNREAD_COUNT_NEW
 
-		#UNREAD_COUNT_NEW = utilities.getUnreadCount()
 		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 		producer.send("google", b"check gmail")
-		UNREAD_COUNT_NEW=0
-
-		if (UNREAD_COUNT < UNREAD_COUNT_NEW):
-			logger.info("A new email has arrived...")
-
-			logger.info("Speaking email notification")
-			email_quips = [
-				"Yet another email",
-				"Pardon the interruption sir. Another email has arrived for you to ignore."]
-
-			tempint = randint(1,len(email_quips))
-
-		if (UNREAD_COUNT_NEW != 0):
-			logger.info("Unread count: "+str(UNREAD_COUNT_NEW))
 
 	def beSmart(self):
 		"""
