@@ -223,7 +223,7 @@ def refreshAll():
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 	cursor = db.cursor()
 	cursor.execute("SELECT * from user;")
-	data = cursor.fetchall()
+	user_data = cursor.fetchall()
 
 	# figure out device types
 	dev_types = {}
@@ -247,10 +247,10 @@ def refreshAll():
 		env_id = env_data[0]
 
 	# get all devices for that user
-	for user in data:
-		print(data) 	# DEBUG
-		logger.info("refreshing user "+user[1])
-		last_online=user[3]
+	for user in user_data:
+		logger.info("Refreshing user "+user[1])
+		logger.info(user)
+		last_online=user[6]
 
 		# get all devices for that user
 		try:
