@@ -68,7 +68,7 @@ class Speaker:
 		self.stop = False
 		agent=Thread(target=self.processQueue)
 		try:
-			logger.info("starting speaker agent")
+			logger.info("Starting speaker agent")
 			agent.start()
 		except Exception as e:
 			logger.error("Failed to start speaker agent thread")
@@ -136,8 +136,9 @@ class Speaker:
 			})
 			print(voice['response'])
 			print(voice['error'])
+			logger.info("Got audio data")
 		except Exception as e:
-			logger.error("failed to get TTS file")
+			logger.error("Failed to get TTS file")
 			logger.error("Exception: ",e)
 
 		# write resulting stream to a file
@@ -153,6 +154,7 @@ class Speaker:
 
 		# playback the resulting audio file
 		try:
+			logger.info("Playing audio file")
 			os.system('mplayer -ao sdl '+ os.path.join(CURRENT_PATH,'audio.mp3'))
 		except Exception as e:
 			logger.error("Failed to play audio file")
@@ -165,6 +167,7 @@ class Speaker:
 				self.speak(self.queue[0])
 				self.queue = self.queue[1:]
 			if self.stop:
+				logger.info("Closing speaker and dumping queue")
 				self.queue = [] # dump the queue
 				self.speak("good bye")
 				return
