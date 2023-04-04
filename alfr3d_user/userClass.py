@@ -312,6 +312,7 @@ def refreshAll():
 if __name__ == '__main__':
 	# get all instructions from Kafka
 	# topic: user
+	logger.info("Starting Alfr3d's user service")
 	try:
 		consumer = KafkaConsumer('user', bootstrap_servers=KAFKA_URL)
 	except Exception as e:

@@ -298,6 +298,7 @@ def checkLAN():
 if __name__ == '__main__':
 	# get all instructions from Kafka
 	# topic: device
+	logger.info("Starting Alfr3d's device service")
 	try:
 		consumer = KafkaConsumer('device', bootstrap_servers=KAFKA_URL)
 	except Exception as e:

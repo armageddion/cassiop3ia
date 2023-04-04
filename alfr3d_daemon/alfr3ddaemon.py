@@ -69,6 +69,8 @@ UNREAD_COUNT_NEW = 0
 QUIP_START_TIME = time.time()
 QUIP_WAIT_TIME = randint(5,10)
 
+KAFKA_URL = os.environ.get('KAFKA_URL') or 'localhost:9092'
+
 # set up logging
 logger = logging.getLogger("DaemonLog")
 logger.setLevel(logging.DEBUG)
@@ -80,7 +82,7 @@ logger.addHandler(handler)
 
 producer = None
 try:
-	producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 	#producer.send('speak', b'starting alfr3d daemon')
 except Exception as e:
 	logger.error("Failed to connect to Kafka server")
@@ -96,7 +98,7 @@ class MyDaemon(Daemon):
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 			#try:
 			logger.info("Time for localnet scan")
-			producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+			producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 			r=producer.send("device", b"scan net")
 
 			# Block for 'synchronous' sends
@@ -149,6 +151,8 @@ class MyDaemon(Daemon):
 		global UNREAD_COUNT_NEW
 
 		#UNREAD_COUNT_NEW = utilities.getUnreadCount()
+		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+		producer.send("google", b"check gmail")
 		UNREAD_COUNT_NEW=0
 
 		if (UNREAD_COUNT < UNREAD_COUNT_NEW):
@@ -175,7 +179,7 @@ class MyDaemon(Daemon):
 		if time.time() - QUIP_START_TIME > QUIP_WAIT_TIME*60:
 			logger.info("It is time to be a smartass")
 
-			producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+			producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 			producer.send("speak", b"alfr3d-speak.random")
 
 			QUIP_START_TIME = time.time()
@@ -244,7 +248,7 @@ def init_daemon():
 			initialize alfr3d services
 	"""
 	logger.info("Initializing systems check")
-	producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 
 	producer.send("speak", b"Initializing systems checks")
 	#producer.flush()
