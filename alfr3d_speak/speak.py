@@ -65,7 +65,7 @@ class Speaker:
 			Description:
 	        	Create a thread which will consistently monitor the queue
 		"""
-
+		self.stop = False
 		agent=Thread(target=self.processQueue)
 		try:
 			logger.info("starting speaker agent")
@@ -88,7 +88,7 @@ class Speaker:
 	        	Whenever a request to speak is received,
 				the new item is simply added to the speaker queue
 		"""		
-		logger.info("speaking string "+str(stringToSpeak))
+		logger.info("Speaking string "+str(stringToSpeak))
 		if self.stop:
 			self.stop = False
 		self.queue.append(stringToSpeak)
@@ -108,7 +108,7 @@ class Speaker:
 		db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 		cursor = db.cursor()	
 
-		logger.info("getting API key for voicerss from DB")
+		logger.info("Getting API key for voicerss from DB")
 		cursor.execute("SELECT * from config WHERE name = \"voicerss\";")
 		data = cursor.fetchone()	
 		apikey = None
@@ -142,16 +142,18 @@ class Speaker:
 
 		# write resulting stream to a file
 		try:
-			outfile = open('audio.mp3','wb')
+			outfile = open(os.path.join(CURRENT_PATH,'audio.mp3'),'wb')
 			outfile.write(voice['response'])
 			outfile.close()
+			logger.info("Saved audio file")
 		except Exception as e:
 			logger.error("Failed to write outputfile")
 			logger.error("Exception: ", e)
+			return
 
 		# playback the resulting audio file
 		try:
-			os.system('mplayer ./audio.mp3')
+			os.system('mplayer -ao sdl '+ os.path.join(CURRENT_PATH,'audio.mp3'))
 		except Exception as e:
 			logger.error("Failed to play audio file")
 
@@ -229,7 +231,7 @@ if __name__ == '__main__':
 
 	# get main DB credentials
 	DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
-	DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
+	DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'alfr3d'
 	DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 	DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
 	KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
