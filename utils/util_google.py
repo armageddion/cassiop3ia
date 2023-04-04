@@ -36,6 +36,7 @@ import sys
 import time
 import datetime
 import logging
+import MySQLdb
 from kafka import KafkaConsumer,KafkaProducer
 
 from googleapiclient.discovery import build
@@ -44,6 +45,10 @@ from google.auth.transport.requests import Request
 
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
+
+# gmail unread count
+UNREAD_COUNT = 0
+UNREAD_COUNT_NEW = 0
 
 # set up logging
 logger = logging.getLogger("GoogleLog")
@@ -61,7 +66,11 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
 CLIENT_SECRET_FILE = os.path.join(os.path.dirname(__file__),'../conf/client_secret_google.json')
 APPLICATION_NAME = 'Alfr3d'
 
-KAFKA_URL = os.environ.get('KAFKA_URL') or 'localhost:9092'
+DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
+DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'alfr3d'
+DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
+DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
+KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 try:
 	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 except Exception as e:
@@ -122,6 +131,8 @@ def getUnreadCount():
 		Returns:
 			Intiger value of under emails
 	"""
+	logger.info("Checking gmail's unread count")
+	global UNREAD_COUNT
 	credentials = get_credentials_google()
 
 	# Build the Gmail service from discovery
@@ -132,9 +143,28 @@ def getUnreadCount():
 	messages = gmail_service.users().messages().list(userId='me', q='label:inbox is:unread').execute()
 	unread_msgs = messages[u'resultSizeEstimate']
 
-	return unread_msgs
+	logger.info("Unread count - "+str(unread_msgs))
+
+	if (unread_msgs > UNREAD_COUNT):
+		logger.info("A new email has arrived...")
+
+		db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
+		cursor = db.cursor()
+		cursor.execute("SELECT * FROM quips WHERE type = 'email';")
+		quip_data = cursor.fetchall()
+
+		quip = quip_data[randint(1,len(quip_data))][2]
+
+		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+		producer.send("speak", bytes(quip))
+
+		UNREAD_COUNT = unread_msgs
+
+	logger.info("Done checking email")
+	return 
 
 def calendarTomorrow():
+	logger.info("Getting tomorrow's events")
 	credentials = get_credentials_google()
 
 	calendar_service = build('calendar', 'v3', credentials = credentials)
@@ -151,6 +181,7 @@ def calendarTomorrow():
 		orderBy='startTime').execute()
 	events = eventsResult.get('items', [])
 
+	logger.info("Done getting tomorrow's calendar info")
 	if not events:
 		#print('No upcoming events found.')
 		logger.info('No upcoming events found.')
@@ -166,6 +197,7 @@ def calendarTomorrow():
 	# 	return event
 
 def calendarToday():
+	logger.info("Getting today's calendar info")
 	credentials = get_credentials_google()
 
 	calendar_service = build('calendar', 'v3', credentials = credentials)
@@ -190,6 +222,7 @@ def calendarToday():
 	# 	start = event['start'].get('dateTime', event['start'].get('date'))
 	# 	print(start, event['summary'])
 
+	logger.info("Done checking calendar")
 	return True, events
 
 # Main

@@ -140,6 +140,19 @@ CREATE TABLE `config` (
 );
 
 -- ---
+-- Table 'quips'
+-- 
+-- ---
+
+CREATE TABLE `alfr3d`.`quips` (
+  `id` INTEGER UNIQUE AUTO_INCREMENT,
+  `type` VARCHAR(64) NULL DEFAULT NULL,
+  `quips` VARCHAR(256) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+-- ---
 -- Foreign Keys 
 -- ---
 
