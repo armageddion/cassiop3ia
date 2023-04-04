@@ -307,6 +307,7 @@ def refreshAll():
 			continue
 
 	db.close()
+	logger.info("Refreshed all users")
 	return True
 	
 if __name__ == '__main__':
@@ -326,14 +327,15 @@ if __name__ == '__main__':
 				sys.exit(1)
 			if message.value.decode('ascii') == "refresh-all":
 				refreshAll()
-			if message.key.decode('ascii') == "create":
-				usr = User()
-				usr.name = message.value.decode('ascii')
-				usr.create()
-			if message.key.decode('ascii') == "delete":
-				usr = User()
-				usr.name = message.value.decode('ascii')
-				usr.delete()	
+			if message.key:
+				if message.key.decode('ascii') == "create":
+					usr = User()
+					usr.name = message.value.decode('ascii')
+					usr.create()
+				if message.key.decode('ascii') == "delete":
+					usr = User()
+					usr.name = message.value.decode('ascii')
+					usr.delete()	
 
 			time.sleep(10)
 			

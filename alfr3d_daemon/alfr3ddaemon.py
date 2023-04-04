@@ -114,9 +114,7 @@ class MyDaemon(Daemon):
 				god or owner is in tha house
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 			logger.info("Checking if mute")
-			# TODO check if mute
-			mute = False	# temp
-			if not mute:
+			if not self.checkMute():
 				"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 					Things to do only during waking hours and only when
 					god is in tha house
@@ -204,6 +202,20 @@ class MyDaemon(Daemon):
 				turn the lights on or off as needed.
 		"""
 		logger.info("nightlight auto-check")
+
+	def checkMute(self):
+		"""
+			Description:
+				checks what time it is and decides if Alfr3d should be quiet
+				- between wake-up time and bedtime
+				- only when Athos is at home
+				- only when 'owner' is at home
+		"""
+		logger.info("Checking if Alfr3d should be muted")
+		result = False
+
+		return result
+
 
 def sunriseRoutine():
 	"""
