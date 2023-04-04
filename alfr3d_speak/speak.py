@@ -155,7 +155,7 @@ class Speaker:
 		# playback the resulting audio file
 		try:
 			logger.info("Playing audio file")
-			os.system('mplayer -ao sdl '+ os.path.join(CURRENT_PATH,'audio.mp3'))
+			os.system('mplayer -noconsolecontrols -really-quiet '+ os.path.join(CURRENT_PATH,'audio.mp3'))
 		except Exception as e:
 			logger.error("Failed to play audio file")
 

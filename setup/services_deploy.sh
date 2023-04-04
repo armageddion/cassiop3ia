@@ -8,6 +8,7 @@ After=network-online.target kafka.service
 [Service]
 User=alfr3d
 Group=alfr3d
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
 Type=simple
 Restart=on-failure
 ExecStart=python3 /opt/alfr3d/alfr3d_speak/speak.py
