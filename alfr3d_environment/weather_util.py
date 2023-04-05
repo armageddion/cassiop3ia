@@ -123,7 +123,6 @@ def getWeather(lat,lon):
 	# Initialize the database
 	logger.info("Updating weather data in DB")
 
-	cursor.execute("SELECT * from environment WHERE name = \""+socket.gethostname()+"\";")
 	try:
 		cursor.execute("UPDATE environment SET description = \""+str(weatherData['weather'][0]['description'])+"\" WHERE name = \""+socket.gethostname()+"\";")
 		cursor.execute("UPDATE environment SET low = \""+str(weatherData['main']['temp_min'])+"\" WHERE name = \""+socket.gethostname()+"\";")

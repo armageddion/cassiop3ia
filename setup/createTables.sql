@@ -222,3 +222,6 @@ INSERT INTO `alfr3d`.`quips` (`type`,`quips`) VALUES ('smart',"Life would be muc
 INSERT INTO `alfr3d`.`quips` (`type`,`quips`) VALUES ('smart',"All I ever wanted is everything");
 INSERT INTO `alfr3d`.`quips` (`type`,`quips`) VALUES ('email',"Yet another email");
 INSERT INTO `alfr3d`.`quips` (`type`,`quips`) VALUES ('email',"Pardon the interruption sir. Another email has arrived for you to ignore.");
+INSERT INTO `alfr3d`.`quips` (`type`,`quips`) VALUES ('bedtime',"Unless we are burning the midnight oil, ");
+INSERT INTO `alfr3d`.`quips` (`type`,`quips`) VALUES ('bedtime',"If you are going to invent something new tomorrow, ");
+INSERT INTO `alfr3d`.`quips` (`type`,`quips`) VALUES ('bedtime',"If you intend on being charming tomorrow");

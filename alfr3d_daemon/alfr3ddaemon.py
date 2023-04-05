@@ -44,6 +44,10 @@ from kafka.errors import KafkaError
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
 
+# import my own utilities
+sys.path.append(os.path.join(os.path.join(os.getcwd(),os.path.dirname(__file__)),"../"))
+from utils import util_routines
+
 
 # set up daemon things
 os.system('sudo mkdir -p /var/run/alfr3ddaemon')
@@ -90,18 +94,15 @@ class MyDaemon(Daemon):
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Check online members
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-			#try:
 			logger.info("Time for localnet scan")
 			producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
-			r=producer.send("device", b"scan net")
+			producer.send("device", b"scan net")
 
-			# Block for 'synchronous' sends
-			try:
-				record_metadata = r.get(timeout=10)
-			except KafkaError as e:
-				# Decide what to do if produce request failed...
-				logger.error("Kafka error: "+str(e))
-				pass
+			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+				Check routines
+			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+			logger.info("Routine check")
+			util_routines.checkRoutines()			
 
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Things to do only during waking hours and only when
@@ -189,7 +190,7 @@ class MyDaemon(Daemon):
 				- only when 'owner' is at home
 		"""
 		logger.info("Checking if Alfr3d should be muted")
-		result = False
+		result = util_routines.checkMute()
 
 		return result
 
@@ -228,7 +229,8 @@ def resetRoutines():
 		Description:
 			refresh some things at midnight
 	"""
-	#utilities.resetRoutines()
+	logger.info("Time to reset routines")
+	util_routines.resetRoutines()
 
 
 def init_daemon():
@@ -240,7 +242,6 @@ def init_daemon():
 	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 
 	producer.send("speak", b"Initializing systems checks")
-	#producer.flush()
 
 	faults = 0
 
@@ -250,8 +251,8 @@ def init_daemon():
 
 	# set up some routine schedules
 	try:
-		#initSpeaker.speakString("Setting up scheduled routines")
 		logger.info("Setting up scheduled routines")
+		producer.send("speak", b"Setting up scheduled routines")
 		#utilities.createRoutines()
 		resetRoutines()
 
@@ -268,13 +269,12 @@ def init_daemon():
 	if faults != 0:
 		logger.warning("Some startup faults were detected")
 		producer.send("speak", b"Some faults were detected but system started successfully")
-		#producer.flush()
+
 		#producer.send("speak", b"Total number of faults is "+str(faults))
-		#producer.flush()
+
 	else:
 		logger.info("All systems are up and operational")
 		producer.send("speak", b"All systems are up and operational")
-		#producer.flush()
 
 	return
 

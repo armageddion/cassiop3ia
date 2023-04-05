@@ -71,7 +71,7 @@ class User:
 	"""
 	name = 'unknown'
 	state = 'offline'
-	last_online = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+	last_online = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	userType = 'guest'
 
 	def create(self):
@@ -162,7 +162,7 @@ class User:
 
 		try:
 			cursor.execute("UPDATE user SET username = \" "+self.name+"\" WHERE username = \""+self.name+"\";")
-			cursor.execute("UPDATE user SET last_online = \""+datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE username = \""+self.name+"\";")
+			cursor.execute("UPDATE user SET last_online = \""+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE username = \""+self.name+"\";")
 			cursor.execute("SELECT * from states WHERE state = \"online\";")
 			data = cursor.fetchone()
 			stateid = data[0]
@@ -274,7 +274,7 @@ def refreshAll():
 		# this time only needs to account for one cycle of alfr3d's standard loop
 		# or a few... in case one of them misses it :)
 		try:
-			time_now = datetime.utcnow()
+			time_now = datetime.now()
 			delta = time_now-last_online
 		except Exception as  e:
 			logger.error("Failed to figure out the timedelta")

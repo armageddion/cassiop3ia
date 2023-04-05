@@ -75,7 +75,7 @@ class Device:
 	IP = '0.0.0.0'
 	MAC = '00:00:00:00:00:00'
 	state = 'offline'
-	last_online = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+	last_online = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	environment = socket.gethostname()
 	user = 'unknown'
 	deviceType = 'guest'
@@ -180,7 +180,7 @@ class Device:
 		try:
 			cursor.execute("UPDATE device SET name = \""+self.name+"\" WHERE MAC = \""+self.MAC+"\";")
 			cursor.execute("UPDATE device SET IP = \""+self.IP+"\" WHERE MAC = \""+self.MAC+"\";")
-			cursor.execute("UPDATE device SET last_online = \""+datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE MAC = \""+self.MAC+"\";")
+			cursor.execute("UPDATE device SET last_online = \""+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE MAC = \""+self.MAC+"\";")
 			cursor.execute("SELECT * from states WHERE state = \"online\";")
 			data = cursor.fetchone()
 			stateid = data[0]

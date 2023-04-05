@@ -36,6 +36,7 @@ import os
 import sys
 import logging
 import MySQLdb
+from time import strftime, localtime
 from threading import Thread			# used to process speaker queue in a thread
 from kafka import KafkaConsumer			# used to connect to Kafka to gather messages
 from random import randint				# used for random number generator
@@ -192,7 +193,116 @@ class Speaker:
 
 		quip = quip_data[randint(0,len(quip_data)-1)][2]
 
+		db.close()
+
 		self.speakString(quip)
+
+	def speakGreeting(self):
+		"""
+			Description:
+				This function speaks a random variation of "Hello"
+		"""
+
+		logger.info("Speaking greeting")
+
+		# Time variables
+		hour=strftime("%I", localtime())
+		minute=strftime("%M", localtime())
+		ampm=strftime("%p",localtime())	
+
+		greeting = ''
+
+		if(ampm == "AM"):
+			if (int(hour) > 5):
+				greeting += "Good morning. "
+			else:
+				greeting = "Why are you awake at this hour? "
+		else:
+			if (int(hour) < 7 or int(hour) == 12):
+				greeting += "Good afternoon. "
+			else:
+				greeting += "Good evening. "
+
+		self.speakString(greeting)		
+
+	def speakTime(self):
+		"""
+			Description:
+				function speaks time
+		"""	
+		logger.info("Speaking time")
+
+		greeting = ''
+
+		# Time variables
+		hour=strftime("%I", localtime())
+		minute=strftime("%M", localtime())
+		ampm=strftime("%p",localtime())	
+
+		if (int(minute) == 0):
+			greeting = "It is " + str(int(hour)) + ". "
+		else:
+			greeting = "It is "  + str(int(hour)) + " " + minute + ". "
+
+		self.speakString(greeting)		
+
+	def speakDate(self):
+		"""
+			Description:
+				Speak date
+		"""
+		logger.info("Speaking date")
+
+		greeting = "It is "
+
+		day_of_week = strftime('%A',localtime())
+		day = strftime('%e',localtime())
+		month = strftime('%B',localtime())
+
+		greeting += day_of_week + ' ' + month + ' ' +day
+
+		dom = day[-1]
+		if dom == '1':
+			greeting += 'st'
+		elif dom == '2':
+			greeting += 'nd'
+		elif dom == '3':
+			greeting += 'rd'
+		else:
+			greeting += 'th'
+
+		self.speakString(greeting)		
+
+	def performRoutine(self, routine_name):
+		logger.info("Performing routine: "+routine_name)
+
+		if routine_name == 'Sunrise':
+			## TODO
+			pass
+		elif routine_name == 'Morning':
+			self.speakString("Your time to rest has come to an end")
+			self.speakTime()
+			self.speakDate()
+		elif routine_name == 'Sunset':
+			## TODO
+			pass
+		elif routine_name == 'Bedtime':
+			self.speakTime()
+
+			db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
+			cursor = db.cursor()
+			cursor.execute("SELECT * FROM quips WHERE type = 'bedtime';")
+			quip_data = cursor.fetchall()
+
+			quip = quip_data[randint(0,len(quip_data)-1)][2]
+			quip += " perhaps you should consider getting some rest."
+
+			db.close()
+			self.speakString(quip)
+
+		else:
+			logger.info("I don't know how to perform this routine")
+			return
 		
 if __name__ == '__main__':
 	speaker = Speaker()
@@ -216,7 +326,10 @@ if __name__ == '__main__':
 			if message.value.decode('ascii') == "alfr3d-speak.exit":
 				speaker.close()
 				sys.exit()
-			if message.value.decode('ascii') == "alfr3d-speak.random":
+			if message.key:
+				if message.key.decode('ascii') == "routine":
+					speaker.performRoutine(message.value.decode('ascii'))
+			elif message.value.decode('ascii') == "alfr3d-speak.random":
 				speaker.speakRandom()
 			else:
 				speaker.speakString(message.value.decode('ascii'))
