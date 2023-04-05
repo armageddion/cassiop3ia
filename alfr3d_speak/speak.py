@@ -289,7 +289,8 @@ class Speaker:
 			producer.send('environment',b"check weather")
 
 			# get undread count
-			
+			producer.send('google',b"morning mail")
+
 		elif routine_name == 'Sunset':
 			## TODO
 			pass

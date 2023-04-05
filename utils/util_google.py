@@ -164,6 +164,14 @@ def getUnreadCount():
 	logger.info("Done checking email")
 	return 
 
+def morningMailCheck():
+	"""
+		Description:
+			This function provides the count of unread messages to the morning routine
+	"""	
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+	producer.send('speak',bytes("while you were sleeping "+str(UNREAD_COUNT)+" emails flooded your inbox",'utf-8'))
+
 def calendarTomorrow():
 	logger.info("Getting tomorrow's events")
 	credentials = get_credentials_google()
@@ -246,6 +254,8 @@ if __name__ == '__main__':
 				sys.exit(1)
 			if message.value.decode('ascii') == "check gmail":
 				getUnreadCount()
+			if message.value.decode('ascii') == "morning mail":
+				morningMailCheck()
 			if message.value.decode('ascii') == "check calendar today":
 				calendarToday()
 			if message.value.decode('ascii') == "check calendar tomorrow":

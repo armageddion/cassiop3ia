@@ -230,9 +230,9 @@ def getWeather(lat,lon):
 		producer.send("speak", greeting.encode('utf-8'))
 		logger.info(greeting+"\n")
 
-	producer.send("speak", ("Current temperature in "+weatherData['name']+" is "+str(weatherData['main']['temp'])+" degrees").encode('utf-8'))
+	producer.send("speak", ("Current temperature in "+weatherData['name']+" is "+str(int(weatherData['main']['temp']))+" degrees").encode('utf-8'))
 	if (ampm=="AM" and int(hour)<10):
-		producer.send("speak", ("Today\'s high is expected to be "+str(weatherData['main']['temp_max'])+" degrees").encode('utf-8'))
+		producer.send("speak", ("Today\'s high is expected to be "+str(int(weatherData['main']['temp_max']))+" degrees").encode('utf-8'))
 
 	logger.info("Spoke weather\n")
 	return True
