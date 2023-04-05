@@ -82,7 +82,7 @@ def checkRoutines():
 		cur_time = datetime.now()
 
 		# does routine need to be triggered??
-		if routine_time > cur_time and not routine_trigger:
+		if cur_time > routine_time and not routine_trigger:
 			logger.info(routine[1] + " routine is being triggered")
 			# set triggered flag = True
 			try:

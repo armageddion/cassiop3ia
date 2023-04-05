@@ -285,6 +285,16 @@ def checkLocation(method="freegeoip"):
 		logger.error("Traceback "+str(e))
 	return 
 
+def checkWeather():
+	logger.info("Checking latest weather reports")
+	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
+	cursor = db.cursor()
+
+	cursor.execute("SELECT * from environment WHERE name = \""+socket.gethostname()+"\";")
+	data = cursor.fetchone()
+
+	weather_util.getWeather(data[2],data[3])		
+
 # Main
 if __name__ == '__main__':
 	# get all instructions from Kafka
@@ -301,6 +311,8 @@ if __name__ == '__main__':
 				logger.info("Received exit request. Stopping service.")
 				sys.exit()
 			if message.value.decode('ascii') == "check location":
-					checkLocation()
+				checkLocation()
+			if message.value.decode('ascii') == "check weather":
+				checkWeather()
 
 			time.sleep(10)

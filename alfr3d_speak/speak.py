@@ -37,9 +37,9 @@ import sys
 import logging
 import MySQLdb
 from time import strftime, localtime
-from threading import Thread			# used to process speaker queue in a thread
-from kafka import KafkaConsumer			# used to connect to Kafka to gather messages
-from random import randint				# used for random number generator
+from threading import Thread					# used to process speaker queue in a thread
+from kafka import KafkaConsumer,KafkaProducer	# used to connect to Kafka to gather messages
+from random import randint						# used for random number generator
 
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
@@ -283,6 +283,13 @@ class Speaker:
 			self.speakString("Your time to rest has come to an end")
 			self.speakTime()
 			self.speakDate()
+
+			# speak weather
+			producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+			producer.send('environment',b"check weather")
+
+			# get undread count
+			
 		elif routine_name == 'Sunset':
 			## TODO
 			pass

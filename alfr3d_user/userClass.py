@@ -280,7 +280,7 @@ def refreshAll():
 			logger.error("Failed to figure out the timedelta")
 			delta = timedelta(minutes=60)
 
-		if delta > timedelta(minutes=30):	# 30 minutes
+		if delta < timedelta(minutes=30):	# 30 minutes
 			logger.info("User is online")	#DEBUG
 			if user[5] == stat["offline"]:
 				logger.info(user[1]+" just came online")

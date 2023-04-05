@@ -237,8 +237,6 @@ def getWeather(lat,lon):
 	logger.info("Spoke weather\n")
 	return True
 
-	f.close()
-
 def KtoC(tempK):
 	"""
 		converts temperature in kelvin to celsius
