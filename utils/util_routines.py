@@ -77,10 +77,11 @@ def checkRoutines():
 		logger.info("Checking "+routine[1]+" routine with time "+str(routine[2])+" and flag "+str(routine[4]))
 		# get routine trigger time and flag
 		routine_time = routine[2]
-		routine_time = datetime.now().replace(hour=routine_time.seconds/3600, minute=((routine_time.seconds//60)%60))
+		routine_time = datetime.now().replace(hour=int(routine_time.seconds/3600), minute=int((routine_time.seconds//60)%60))
 		routine_trigger = routine[4]
 		cur_time = datetime.now()
 
+		# does routine need to be triggered??
 		if routine_time > cur_time and not routine_trigger:
 			logger.info(routine[1] + " routine is being triggered")
 			# set triggered flag = True
@@ -166,8 +167,8 @@ def checkMute():
 	bed_time = bed[2]
 
 	cur_time = datetime.now()
-	mor_time = datetime.now().replace(hour=morning_time.seconds/3600, minute=((morning_time.seconds//60)%60))
-	end_time = datetime.now().replace(hour=bed_time.seconds/3600, minute=((bed_time.seconds//60)%60))
+	mor_time = datetime.now().replace(hour=int(morning_time.seconds/3600), minute=int((morning_time.seconds//60)%60))
+	end_time = datetime.now().replace(hour=int(bed_time.seconds/3600), minute=int((bed_time.seconds//60)%60))
 
 	# only speak between morning alarm and bedtime alarm...
 	if cur_time > mor_time and cur_time < end_time:

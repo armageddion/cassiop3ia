@@ -125,8 +125,8 @@ def getWeather(lat,lon):
 
 	try:
 		cursor.execute("UPDATE environment SET description = \""+str(weatherData['weather'][0]['description'])+"\" WHERE name = \""+socket.gethostname()+"\";")
-		cursor.execute("UPDATE environment SET low = \""+str(weatherData['main']['temp_min'])+"\" WHERE name = \""+socket.gethostname()+"\";")
-		cursor.execute("UPDATE environment SET high = \""+str(weatherData['main']['temp_max'])+"\" WHERE name = \""+socket.gethostname()+"\";")
+		cursor.execute("UPDATE environment SET low = \""+str(int(weatherData['main']['temp_min']))+"\" WHERE name = \""+socket.gethostname()+"\";")
+		cursor.execute("UPDATE environment SET high = \""+str(int(weatherData['main']['temp_max']))+"\" WHERE name = \""+socket.gethostname()+"\";")
 		cursor.execute("UPDATE environment SET sunrise = \""+datetime.fromtimestamp(weatherData['sys']['sunrise']).strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE name = \""+socket.gethostname()+"\";")
 		cursor.execute("UPDATE environment SET sunset = \""+datetime.fromtimestamp(weatherData['sys']['sunset']).strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE name = \""+socket.gethostname()+"\";")
 		db.commit()
