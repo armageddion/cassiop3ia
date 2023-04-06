@@ -169,6 +169,8 @@ def morningMailCheck():
 		Description:
 			This function provides the count of unread messages to the morning routine
 	"""	
+	if UNREAD_COUNT == 0:
+		return
 	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 	producer.send('speak',bytes("while you were sleeping "+str(UNREAD_COUNT)+" emails flooded your inbox",'utf-8'))
 
