@@ -29,7 +29,7 @@
 #      or in part) from, or statically or dynamically links against any
 #      software/component specified under (i).
 
-import os
+import os, sys
 import logging
 import socket
 import MySQLdb
@@ -142,7 +142,7 @@ def checkMute():
 		Description:
 			checks what time it is and decides if B3na should be quiet
 	"""
-	logger.info("Checking if B3na should be mute")
+	logger.info("Checking if Alfr3d should be mute")
 	result = False
 
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
@@ -213,3 +213,7 @@ def checkMute():
 		logger.info("Alfr3d is free to speak")
 
 	return result
+
+if __name__ == '__main__':
+	if sys.argv[1] == 'reset':
+		resetRoutines()
