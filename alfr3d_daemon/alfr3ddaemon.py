@@ -125,7 +125,7 @@ class MyDaemon(Daemon):
 
 				# check emails
 				try:
-					logger.info("Checking Gmail")
+					logger.info("Time to check Gmail")
 					self.checkGmail()
 				except Exception as e:
 					logger.error("Failed to check Gmail")

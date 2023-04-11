@@ -332,6 +332,13 @@ class Speaker:
 			## TODO
 			pass
 		elif routine_name == 'Morning':
+			# play music
+			try: 
+				logger.info("Looking for music")
+				os.system('mplayer -noconsolecontrols -really-quiet /home/alfr3d/Music/Lou\ Reed\ -\ Perfect\ Day.mp3')
+			except Exception as e:
+				logger.info("Failed to play morning music")
+				
 			self.speakString("Your time to rest has come to an end")
 			self.speakTime()
 			self.speakDate()
