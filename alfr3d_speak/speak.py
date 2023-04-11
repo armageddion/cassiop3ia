@@ -40,6 +40,7 @@ from time import strftime, localtime
 from threading import Thread					# used to process speaker queue in a thread
 from kafka import KafkaConsumer,KafkaProducer	# used to connect to Kafka to gather messages
 from random import randint						# used for random number generator
+from datetime import datetime, timedelta
 
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
@@ -271,7 +272,58 @@ class Speaker:
 		else:
 			greeting += 'th'
 
-		self.speakString(greeting)		
+		self.speakString(greeting)	
+
+	def speakWelcome(self, name, type, time_away):
+		"""
+			Description:
+				Speak a welcome home greeting
+		"""	
+		logger.info("Speaking welcome. User: "+name)
+
+		self.speakGreeting()
+
+		greeting = ""
+
+		# greet a known inhabitant
+		if type == "owner" or \
+		   type == "resident" or \
+		   type == "technoking":
+			greeting += "Welcome home"
+			if type == "techoking":
+				greeting += ", sir."
+
+			logger.info("Greeting a known ihabitant")
+			self.speakString(greeting)
+
+			if (time_away > datetime.now()-timedelta(hours=2)):
+				self.speak("I didn't expect you back so soon")
+			elif (time_away > datetime.now()-timedelta(hours=10)):
+				self.speak("I hope you enjoyed the outdoors")
+				# get undread count
+				producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+				producer.send('google',b"daytime mail")
+			else:
+				self.speak("I haven't seen you in a while")
+				self.speak("I was beginning to worry")
+		
+		# greet a guest or known stranger
+		else:
+			greeting += "Welcome "
+			if name == "unknown":
+				logger.info("Greeting a stranger")
+				greeting += "stranger"			
+			else:
+				logger.info("Greeting a known guest")
+				greeting += name
+			
+			if (time_away > datetime.now()-timedelta(hours=2)):
+				self.speak("I am beginning to think that you must forget things frequently ")
+				self.speak("while not thinking about not forgetting things at all.")
+			else:
+				self.speak("I haven't seen you in a while.")
+				if(datetime.now().hour > 21 or datetime.now().hour < 5):
+					self.speak("You're just in time for a night cap. ")
 
 	def performRoutine(self, routine_name):
 		logger.info("Performing routine: "+routine_name)
@@ -337,6 +389,10 @@ if __name__ == '__main__':
 			if message.key:
 				if message.key.decode('ascii') == "routine":
 					speaker.performRoutine(message.value.decode('ascii'))
+				if message.key.decode('ascii') == "welcome":
+					msg = message.value.decode('ascii')
+					print(msg) # DEBUG
+					speaker.speakWelcome(msg['user'],msg['time_away'])
 			elif message.value.decode('ascii') == "alfr3d-speak.random":
 				speaker.speakRandom()
 			else:

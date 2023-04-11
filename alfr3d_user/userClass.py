@@ -36,7 +36,7 @@ import sys
 import time
 import logging
 import socket
-#import ConfigParser
+import json
 import MySQLdb
 from kafka import KafkaConsumer,KafkaProducer
 from datetime import datetime, timedelta
@@ -285,9 +285,15 @@ def refreshAll():
 			if user[5] == stat["offline"]:
 				logger.info(user[1]+" just came online")
 				producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
-				producer.send("speak", bytes(user[1]+" just came online",'utf-8')) ## temp until greeting
-				# welcome the user
+				producer.send("speak", bytes(user[1]+" just came online",'utf-8')) ## temp until greeting				
 				cursor.execute("UPDATE user SET state = "+str(stat['online'])+" WHERE username = \""+user[1]+"\";")
+				# welcome the user
+				data = {
+					'user':user[1],
+					'type':user[8],
+					'time_away':(datetime.now()-last_online)
+					}
+				producer.send("speak",value=json.dumps(data).encode('utf-8'),key=b'welcome')
 				#nighttime_auto()	# turn on the lights
 				# speak welcome
 		else:

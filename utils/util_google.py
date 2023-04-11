@@ -169,10 +169,18 @@ def morningMailCheck():
 		Description:
 			This function provides the count of unread messages to the morning routine
 	"""	
-	if UNREAD_COUNT == 0:
-		return
-	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
-	producer.send('speak',bytes("while you were sleeping "+str(UNREAD_COUNT)+" emails flooded your inbox",'utf-8'))
+	if UNREAD_COUNT > 0:
+		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+		producer.send('speak',bytes("while you were sleeping "+str(UNREAD_COUNT)+" emails flooded your inbox",'utf-8'))
+
+def daytimeMailCheck():
+	"""
+		Description:
+			This function provides the count of unread messages to the morning routine
+	"""	
+	if UNREAD_COUNT > 0:
+		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+		producer.send('speak',bytes("while you were away "+str(UNREAD_COUNT)+" emails flooded your inbox",'utf-8'))
 
 def calendarTomorrow():
 	logger.info("Getting tomorrow's events")
@@ -258,6 +266,8 @@ if __name__ == '__main__':
 				getUnreadCount()
 			if message.value.decode('ascii') == "morning mail":
 				morningMailCheck()
+			if message.value.decode('ascii') == "daytime mail":
+				daytimeMailCheck()
 			if message.value.decode('ascii') == "check calendar today":
 				calendarToday()
 			if message.value.decode('ascii') == "check calendar tomorrow":
