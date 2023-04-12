@@ -291,7 +291,7 @@ def refreshAll():
 				data = {
 					'user':user[1],
 					'type':user[8],
-					'time_away':(datetime.now()-last_online)
+					'time_away':str((datetime.now()-last_online).seconds)
 					}
 				producer.send("speak",value=json.dumps(data).encode('utf-8'),key=b'welcome')
 				#nighttime_auto()	# turn on the lights

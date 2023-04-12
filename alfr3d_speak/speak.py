@@ -280,6 +280,8 @@ class Speaker:
 				Speak a welcome home greeting
 		"""	
 		logger.info("Speaking welcome. User: "+name)
+		logger.info("Time_away = "+str(time_away)+" seconds")
+		time_away = timedelta(seconds=time_away)
 
 		self.speakGreeting()
 
@@ -338,7 +340,7 @@ class Speaker:
 				os.system('mplayer -noconsolecontrols -really-quiet /home/alfr3d/Music/Lou\ Reed\ -\ Perfect\ Day.mp3')
 			except Exception as e:
 				logger.info("Failed to play morning music")
-				
+
 			self.speakString("Your time to rest has come to an end")
 			self.speakTime()
 			self.speakDate()
