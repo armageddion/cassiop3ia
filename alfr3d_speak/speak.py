@@ -34,6 +34,7 @@
 import voicerss_tts
 import os
 import sys
+import json
 import logging
 import MySQLdb
 from time import strftime, localtime
@@ -274,14 +275,14 @@ class Speaker:
 
 		self.speakString(greeting)	
 
-	def speakWelcome(self, name, type, time_away):
+	def speakWelcome(self, name, type, last_online):
 		"""
 			Description:
 				Speak a welcome home greeting
 		"""	
 		logger.info("Speaking welcome. User: "+name)
-		logger.info("Time_away = "+str(time_away)+" seconds")
-		time_away = timedelta(seconds=time_away)
+		logger.info("Last_online = "+str(last_online)+" seconds")
+		last_online = datetime.fromisoformat(last_online)
 
 		self.speakGreeting()
 
@@ -298,9 +299,9 @@ class Speaker:
 			logger.info("Greeting a known ihabitant")
 			self.speakString(greeting)
 
-			if (time_away > datetime.now()-timedelta(hours=2)):
+			if (last_online > datetime.now()-timedelta(hours=2)):
 				self.speak("I didn't expect you back so soon")
-			elif (time_away > datetime.now()-timedelta(hours=10)):
+			elif (last_online > datetime.now()-timedelta(hours=10)):
 				self.speak("I hope you enjoyed the outdoors")
 				# get undread count
 				producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
@@ -319,7 +320,7 @@ class Speaker:
 				logger.info("Greeting a known guest")
 				greeting += name
 			
-			if (time_away > datetime.now()-timedelta(hours=2)):
+			if (last_online > datetime.now()-timedelta(hours=2)):
 				self.speak("I am beginning to think that you must forget things frequently ")
 				self.speak("while not thinking about not forgetting things at all.")
 			else:
@@ -399,9 +400,9 @@ if __name__ == '__main__':
 				if message.key.decode('ascii') == "routine":
 					speaker.performRoutine(message.value.decode('ascii'))
 				if message.key.decode('ascii') == "welcome":
-					msg = message.value.decode('ascii')
-					print(msg) # DEBUG
-					speaker.speakWelcome(name=msg['user'],type=msg['type'], time_away=msg['time_away'])
+					msg = json.loads(message)
+					#print(msg) # DEBUG
+					speaker.speakWelcome(name=msg['user'],type=msg['type'], last_online=msg['last_online'])
 			elif message.value.decode('ascii') == "alfr3d-speak.random":
 				speaker.speakRandom()
 			else:
