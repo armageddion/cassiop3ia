@@ -401,7 +401,7 @@ if __name__ == '__main__':
 				if message.key.decode('ascii') == "welcome":
 					msg = message.value.decode('ascii')
 					print(msg) # DEBUG
-					speaker.speakWelcome(msg['user'],msg['time_away'])
+					speaker.speakWelcome(name=msg['user'],type=msg['type'], time_away=msg['time_away'])
 			elif message.value.decode('ascii') == "alfr3d-speak.random":
 				speaker.speakRandom()
 			else:

@@ -286,11 +286,13 @@ def refreshAll():
 				logger.info(user[1]+" just came online")
 				producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 				producer.send("speak", bytes(user[1]+" just came online",'utf-8')) ## temp until greeting				
-				cursor.execute("UPDATE user SET state = "+str(stat['online'])+" WHERE username = \""+user[1]+"\";")
+				cursor.execute("UPDATE user SET state = "+str(stat['online'])+" WHERE username = \""+user[1]+"\";")				
 				# welcome the user
+				cursor.execute("SELECT * FROM alfr3d.user_types where id = \""+user[8]+"\";")
+				usr_type = cursor.fetchone()
 				data = {
 					'user':user[1],
-					'type':user[8],
+					'type':usr_type[1],
 					'time_away':str((datetime.now()-last_online).seconds)
 					}
 				producer.send("speak",value=json.dumps(data).encode('utf-8'),key=b'welcome')
