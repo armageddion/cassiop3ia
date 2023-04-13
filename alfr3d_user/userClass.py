@@ -288,8 +288,9 @@ def refreshAll():
 				producer.send("speak", bytes(user[1]+" just came online",'utf-8')) ## temp until greeting				
 				cursor.execute("UPDATE user SET state = "+str(stat['online'])+" WHERE username = \""+user[1]+"\";")				
 				# welcome the user
-				cursor.execute("SELECT * FROM alfr3d.user_types where id = \""+user[8]+"\";")
+				cursor.execute("SELECT * FROM alfr3d.user_types where id = \""+str(user[8])+"\";")
 				usr_type = cursor.fetchone()
+				print(usr_type)
 				data = {
 					'user':user[1],
 					'type':usr_type[1],
