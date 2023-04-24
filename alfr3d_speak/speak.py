@@ -283,6 +283,7 @@ class Speaker:
 		logger.info("Speaking welcome. User: "+name)
 		logger.info("Last_online = "+str(last_online)+" seconds")
 		last_online = datetime.fromisoformat(last_online)
+		logger.info("Last_online = "+str(last_online))	#DEBUG
 
 		self.speakGreeting()
 
@@ -300,15 +301,15 @@ class Speaker:
 			self.speakString(greeting)
 
 			if (last_online > datetime.now()-timedelta(hours=2)):
-				self.speak("I didn't expect you back so soon")
+				self.speakString("I didn't expect you back so soon")
 			elif (last_online > datetime.now()-timedelta(hours=10)):
-				self.speak("I hope you enjoyed the outdoors")
+				self.speakString("I hope you enjoyed the outdoors")
 				# get undread count
 				producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 				producer.send('google',b"daytime mail")
 			else:
-				self.speak("I haven't seen you in a while")
-				self.speak("I was beginning to worry")
+				self.speakString("I haven't seen you in a while")
+				self.speakString("I was beginning to worry")
 		
 		# greet a guest or known stranger
 		else:
@@ -319,14 +320,15 @@ class Speaker:
 			else:
 				logger.info("Greeting a known guest")
 				greeting += name
+			self.speakString(greeting)
 			
 			if (last_online > datetime.now()-timedelta(hours=2)):
-				self.speak("I am beginning to think that you must forget things frequently ")
-				self.speak("while not thinking about not forgetting things at all.")
+				self.speakString("I am beginning to think that you must forget things frequently ")
+				self.speakString("while not thinking about not forgetting things at all.")
 			else:
-				self.speak("I haven't seen you in a while.")
+				self.speakString("I haven't seen you in a while.")
 				if(datetime.now().hour > 21 or datetime.now().hour < 5):
-					self.speak("You're just in time for a night cap. ")
+					self.speakString("You're just in time for a night cap. ")
 
 	def performRoutine(self, routine_name):
 		logger.info("Performing routine: "+routine_name)
@@ -400,7 +402,7 @@ if __name__ == '__main__':
 				if message.key.decode('ascii') == "routine":
 					speaker.performRoutine(message.value.decode('ascii'))
 				if message.key.decode('ascii') == "welcome":
-					msg = json.loads(message)
+					msg = json.loads(message.value)
 					#print(msg) # DEBUG
 					speaker.speakWelcome(name=msg['user'],type=msg['type'], last_online=msg['last_online'])
 			elif message.value.decode('ascii') == "alfr3d-speak.random":

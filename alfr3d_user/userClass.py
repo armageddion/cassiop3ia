@@ -290,7 +290,7 @@ def refreshAll():
 				# welcome the user
 				cursor.execute("SELECT * FROM alfr3d.user_types where id = \""+str(user[8])+"\";")
 				usr_type = cursor.fetchone()
-				print(usr_type)
+				#print(usr_type) # DEBUG
 				data = {
 					'user':user[1],
 					'type':usr_type[1],
