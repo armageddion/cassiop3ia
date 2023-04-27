@@ -122,6 +122,7 @@ class MyDaemon(Daemon):
 				except Exception as e:
 					logger.error("Failed to complete the quip block")
 					logger.error("Traceback: "+str(e))
+					# this could be a good trigger to restart alfr3d_speak service
 
 				# check emails
 				try:

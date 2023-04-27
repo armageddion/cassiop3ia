@@ -264,7 +264,6 @@ def refreshAll():
 					cursor.execute("UPDATE user SET last_online = \""+str(device[5])+"\" WHERE username = \""+user[1]+"\";")
 					cursor.execute("UPDATE user set environment_id = \""+str(env_id)+"\" WHERE username = \""+user[1]+"\";")
 					db.commit()
-					last_online = device[5]
 		except Exception as  e:
 			logger.error("Failed to update the database")
 			logger.error("Traceback: "+str(e))

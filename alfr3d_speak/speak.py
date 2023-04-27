@@ -196,7 +196,7 @@ class Speaker:
 		quip = quip_data[randint(0,len(quip_data)-1)][2]
 
 		db.close()
-
+		logger.info("Selected a quip: "+quip)
 		self.speakString(quip)
 
 	def speakGreeting(self):
