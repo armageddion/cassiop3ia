@@ -264,6 +264,7 @@ def refreshAll():
 					cursor.execute("UPDATE user SET last_online = \""+str(device[5])+"\" WHERE username = \""+user[1]+"\";")
 					cursor.execute("UPDATE user set environment_id = \""+str(env_id)+"\" WHERE username = \""+user[1]+"\";")
 					db.commit()
+					last_online = device[5] 	# most recent online time (user[6] is when user went offline last time)
 		except Exception as  e:
 			logger.error("Failed to update the database")
 			logger.error("Traceback: "+str(e))
@@ -293,7 +294,7 @@ def refreshAll():
 				data = {
 					'user':user[1],
 					'type':usr_type[1],
-					'last_online':str(last_online)
+					'last_online':str(user[6])
 					}
 				producer.send("speak",value=json.dumps(data).encode('utf-8'),key=b'welcome')
 				#nighttime_auto()	# turn on the lights
