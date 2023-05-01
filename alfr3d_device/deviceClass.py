@@ -277,17 +277,30 @@ def checkLAN():
 		device = Device()
 		exists = device.get(member)
 
-		#if device exists in the DB update it
+		# try to find out device name
+		try:
+			name = socket.gethostbyaddr(netClients2[member])
+		except socket.herror:
+			logger.error("Couldn't resolve hostname for device with MAC: "+member)
+		except Exception as e:
+			logger.error("Failed to find out hostname")
+			logger.error("Traceback: "+str(e))	
+
+		# if device exists in the DB update it
 		if exists:
 			logger.info("Updating device with MAC: "+member)
 			device.IP = netClients2[member]
+			if name:
+				device.name = name
 			device.update()
 
-		#otherwise, create and add it.
+		# otherwise, create and add it.
 		else:
 			logger.info("Creating a new DB entry for device with MAC: "+member)
 			device.IP = netClients2[member]
 			device.MAC = member
+			if name:
+				device.name = name
 			device.create(member)
 
 	logger.info("Cleaning up temporary files")
