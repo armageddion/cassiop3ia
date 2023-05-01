@@ -279,7 +279,9 @@ def checkLAN():
 
 		# try to find out device name
 		try:
-			name = socket.gethostbyaddr(netClients2[member])
+			name = socket.gethostbyaddr(netClients2[member])[0]
+			if name == "_gateway":
+				name = None
 		except socket.herror:
 			logger.error("Couldn't resolve hostname for device with MAC: "+member)
 		except Exception as e:
@@ -290,8 +292,6 @@ def checkLAN():
 		if exists:
 			logger.info("Updating device with MAC: "+member)
 			device.IP = netClients2[member]
-			if name:
-				device.name = name
 			device.update()
 
 		# otherwise, create and add it.
