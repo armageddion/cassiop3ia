@@ -158,6 +158,8 @@ def getUnreadCount():
 
 		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 		producer.send("speak", bytes(quip,'utf-8'))
+		# update ESL
+		producer.send("danavation",key=b"emails",value=bytes(str(unread_msgs),'utf-8'))		
 
 		UNREAD_COUNT = unread_msgs
 

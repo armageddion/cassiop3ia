@@ -145,7 +145,7 @@ class DanavationServer:
 		# get today's high
 		today_high = data[9]
 		# get today's DOW
-		dow = datetime.datetime.today().weekday()
+		dow = datetime.today().weekday()
 		if dow == 0:
 			dow = "Ponedeljak"
 		elif dow == 1:
@@ -186,8 +186,8 @@ class DanavationServer:
 					"stock1": today_low,
 					"stock3": today_high,
 					"productArea": dow,
-					"custFeature1": sunrise,
-					"custFeature2": sunset,		
+					"custFeature1": str(sunrise),
+					"custFeature2": str(sunset),
 					"custFeature3": pressure,
 					"custFeature4": humidity
 				}]
