@@ -93,10 +93,9 @@ def checkLocation(method="freegeoip"):
 		if data:
 			logger.info("Found environment configuration for this host")
 			print(data)
-			country = data[4]
-			state = data[10]
-			city = data[3]
-			ip = data[2]
+			country = data[6]
+			state = data[5]
+			city = data[4]
 		else:
 			logger.warning("Failed to find environment configuration for this host")
 			logger.info("Creating environment configuration for this host")
@@ -259,12 +258,12 @@ def checkLocation(method="freegeoip"):
 		producer.send("speak", b"I trust you enjoyed your travels")		
 
 		try:
-			cursor.execute("UPDATE environment SET country = \" "+country_new+"\" WHERE name = \""+socket.gethostname()+"\";")
-			cursor.execute("UPDATE environment SET state = \" "+state_new+"\" WHERE name = \""+socket.gethostname()+"\";")
-			cursor.execute("UPDATE environment SET city = \" "+city_new+"\" WHERE name = \""+socket.gethostname()+"\";")
-			cursor.execute("UPDATE environment SET IP = \" "+ip_new+"\" WHERE name = \""+socket.gethostname()+"\";")
-			cursor.execute("UPDATE environment SET latitude = \" "+str(lat_new)+"\" WHERE name = \""+socket.gethostname()+"\";")
-			cursor.execute("UPDATE environment SET longitude = \" "+str(long_new)+"\" WHERE name = \""+socket.gethostname()+"\";")
+			cursor.execute("UPDATE environment SET country = \""+country_new+"\" WHERE name = \""+socket.gethostname()+"\";")
+			cursor.execute("UPDATE environment SET state = \""+state_new+"\" WHERE name = \""+socket.gethostname()+"\";")
+			cursor.execute("UPDATE environment SET city = \""+city_new+"\" WHERE name = \""+socket.gethostname()+"\";")
+			cursor.execute("UPDATE environment SET IP = \""+ip_new+"\" WHERE name = \""+socket.gethostname()+"\";")
+			cursor.execute("UPDATE environment SET latitude = \""+str(lat_new)+"\" WHERE name = \""+socket.gethostname()+"\";")
+			cursor.execute("UPDATE environment SET longitude = \""+str(long_new)+"\" WHERE name = \""+socket.gethostname()+"\";")
 			db.commit()
 			logger.info("Environment updated")
 		except Exception as e:

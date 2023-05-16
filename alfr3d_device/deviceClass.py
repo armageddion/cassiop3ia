@@ -284,6 +284,7 @@ def checkLAN():
 				name = None
 		except socket.herror:
 			logger.error("Couldn't resolve hostname for device with MAC: "+member)
+			name = None
 		except Exception as e:
 			logger.error("Failed to find out hostname")
 			logger.error("Traceback: "+str(e))	

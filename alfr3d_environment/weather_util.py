@@ -129,6 +129,8 @@ def getWeather(lat,lon):
 		cursor.execute("UPDATE environment SET high = \""+str(int(weatherData['main']['temp_max']))+"\" WHERE name = \""+socket.gethostname()+"\";")
 		cursor.execute("UPDATE environment SET sunrise = \""+datetime.fromtimestamp(weatherData['sys']['sunrise']).strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE name = \""+socket.gethostname()+"\";")
 		cursor.execute("UPDATE environment SET sunset = \""+datetime.fromtimestamp(weatherData['sys']['sunset']).strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE name = \""+socket.gethostname()+"\";")
+		cursor.execute("UPDATE environment SET pressure = \""+str(int(weatherData['main']['pressure']))+"\" WHERE name = \""+socket.gethostname()+"\";")
+		cursor.execute("UPDATE environment SET humidity = \""+str(int(weatherData['main']['humidity']))+"\" WHERE name = \""+socket.gethostname()+"\";")
 		db.commit()
 		logger.info("Environment weather info updated")
 	except Exception as e:
