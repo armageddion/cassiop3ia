@@ -129,7 +129,7 @@ class DanavationServer:
 
 		return True
 	
-	def update_esls(self):
+	def update_esls(self,current=None):
 		"""
 			Description:
 				Get all the info that needs to be displayed
@@ -192,6 +192,8 @@ class DanavationServer:
 					"custFeature4": humidity
 				}]
 			}
+			if current:
+				payload["itemList"][0]["stock2"]=str(current)
 			r = requests.post(url = url, data=json.dumps(payload), headers = headers)
 			#print(r.json())     # DEBUG
 			res = r.json()	
@@ -226,29 +228,7 @@ class DanavationServer:
 				return False	
 
 	def update_temp(self,msg):
-		if self.login():
-			# actually update data
-			headers = headers = {'content-type':'application/json', 'Language':'en','Authorization':self.creds}
-			url = self.server_address+'/item/batchImportItem'
-			payload = {
-				"agencyId": self.server_agent,
-				"merchantId": self.server_merch,
-				"storeId": self.stores[0],
-				"itemList": [
-				{
-					"attrCategory": "default",
-					"attrName": "default",
-					"barCode": "133701",
-					"stock2": str(msg)
-				}]
-			}
-			r = requests.post(url = url, data=json.dumps(payload), headers = headers)
-			#print(r.json())     # DEBUG
-			res = r.json()	
-			if res['success']:
-				return True
-			else:
-				return False				
+		self.update_esls(msg)				
 
 # Main
 if __name__ == '__main__':
