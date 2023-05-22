@@ -135,6 +135,7 @@ class DanavationServer:
 				Get all the info that needs to be displayed
 				and push it to ESLs
 		"""
+		logger.info("Updating ESLs")
 		# connect to DB
 		db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 		cursor = db.cursor()
@@ -200,7 +201,10 @@ class DanavationServer:
 			if res['success']:
 				return True
 			else:
-				return False			
+				logger.error(str(res))
+				return False	
+		else:
+			logger.error("Failed to log in")		
 
 	def update_emails(self,msg):
 		if self.login():
