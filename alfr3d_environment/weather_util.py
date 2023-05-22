@@ -171,7 +171,7 @@ def getWeather(lat,lon):
 	# update ESL
 	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 	producer.send("danavation",key=b"curr-temp",value=bytes(weatherData['main']['temp'],'utf-8'))
-	producer.send("danavation",'update_esls')
+	producer.send("danavation",b'update_esls')
 
 	# Subjective weather
 	badDay = []

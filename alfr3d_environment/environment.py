@@ -268,7 +268,7 @@ def checkLocation(method="freegeoip"):
 			logger.info("Environment updated")
 		except Exception as e:
 			logger.error("Failed to update Environment database")
-			logger.error("Traceback "+str(e))
+			logger.error("Traceback: "+str(e))
 			db.rollback()
 			db.close()
 			return [False, 0, 0]
