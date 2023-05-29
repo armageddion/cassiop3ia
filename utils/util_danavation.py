@@ -141,6 +141,7 @@ class DanavationServer:
 		cursor = db.cursor()
 		cursor.execute("SELECT * from environment WHERE name = \""+socket.gethostname()+"\";")
 		data = cursor.fetchone()
+		env_id = data[0]
 		# get today's low
 		today_low = data[8]
 		# get today's high
@@ -171,6 +172,23 @@ class DanavationServer:
 		# get today's humidity
 		humidity = data[14]
 
+		cursor.execute("SELECT * from routines WHERE environment_id = \""+str(env_id)+"\";")
+		data = cursor.fetchall()
+		morning="00:00"
+		bedtime="00:00"
+		# get times for today's routines
+		for routine in data:
+			if routine[1] == "Sunrise":
+				sunrise = routine[2]
+			elif routine[1] == "Morning":
+				morning = routine[2]
+			elif routine[1] == "Sunset":
+				sunset = routine[2]
+			elif routine[1] == "Bedtime":
+				bedtime = routine[2]
+			else:
+				logger.info("Unknown routine")
+
 		if self.login():
 			# actually update data
 			headers = headers = {'content-type':'application/json', 'Language':'en','Authorization':self.creds}
@@ -191,6 +209,15 @@ class DanavationServer:
 					"custFeature2": str(sunset),
 					"custFeature3": pressure,
 					"custFeature4": humidity
+				},
+				{
+					"attrCategory": "default",
+					"attrName": "tech_test",
+					"barCode": "133703",
+					"custFeature1": str(sunrise),
+					"custFeature2": str(morning),
+					"custFeature3": str(sunset),
+					"custFeature4": str(bedtime)					
 				}]
 			}
 			if current:
