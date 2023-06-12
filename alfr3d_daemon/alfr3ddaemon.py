@@ -38,24 +38,27 @@ import sys
 import schedule					# 3rd party lib used for alarm clock managment.
 from daemon import Daemon
 from random import randint		# used for random number generator
+from kafka import KafkaProducer # user to write messages to Kafka
+from kafka.errors import KafkaError
 
 # current path from which python is executed
 CURRENT_PATH = os.path.dirname(__file__)
 
+# import my own utilities
+sys.path.append(os.path.join(os.path.join(os.getcwd(),os.path.dirname(__file__)),"../"))
+from utils import util_routines
+
 
 # set up daemon things
 os.system('sudo mkdir -p /var/run/alfr3ddaemon')
-#os.system('sudo chown alfr3d:alfr3d /var/run/alfr3ddaemon')
+os.system('sudo chown alfr3d:alfr3d /var/run/alfr3ddaemon')
 
 # get main DB credentials
 DATABASE_URL 	= os.environ.get('DATABASE_URL') or "localhost"
-DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or "cassiop3ia"
+DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or "alfr3d"
 DATABASE_USER 	= os.environ.get('DATABASE_USER') or "alfr3d"
 DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or "alfr3d"
-
-# gmail unread count
-UNREAD_COUNT = 0
-UNREAD_COUNT_NEW = 0
+KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 
 # time of sunset/sunrise - defaults
 # SUNSET_TIME = datetime.datetime.now().replace(hour=19, minute=0)
@@ -70,81 +73,79 @@ QUIP_WAIT_TIME = randint(5,10)
 logger = logging.getLogger("DaemonLog")
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler = logging.FileHandler(os.path.join(CURRENT_PATH,"../log/total.log"))
+#handler = logging.FileHandler(os.path.join(CURRENT_PATH,"../log/total.log"))
+handler = logging.FileHandler("/var/log/alfr3d/alfr3d.log")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+producer = None
+try:
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+	#producer.send('speak', b'starting alfr3d daemon')
+except Exception as e:
+	logger.error("Failed to connect to Kafka server")
+	logger.error("Traceback: "+str(e))
+	sys.exit(1)
 
 class MyDaemon(Daemon):
 	def run(self):
 		while True:
-			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-				Logging Examples:
-				logger.debug("Debug message")
-				logger.info("Info message")
-				logger.warn("Warning message")
-				logger.error("Error message")
-			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Check online members
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+			logger.info("Time for localnet scan")
+			producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+			producer.send("device", b"scan net")
 
+			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+				Check routines
+			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+			logger.info("Routine check")
+			util_routines.checkRoutines()			
 
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 				Things to do only during waking hours and only when
 				god or owner is in tha house
 			"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 			logger.info("Checking if mute")
-			mute = False
-			if not mute:
+			if not self.checkMute():
 				"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 					Things to do only during waking hours and only when
 					god is in tha house
 				"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+				# ramble quips every once in a while
 				try:
 					logger.info("Is it time for a smartass quip?")
+					## Do a quip
+					self.beSmart()
 				except Exception as e:
 					logger.error("Failed to complete the quip block")
 					logger.error("Traceback: "+str(e))
+					# this could be a good trigger to restart alfr3d_speak service
 
 				# check emails
 				try:
-					logger.info("Checking Gmail")
+					logger.info("Time to check Gmail")
+					self.checkGmail()
 				except Exception as e:
 					logger.error("Failed to check Gmail")
 					logger.error("Traceback: "+str(e))
 
 			# OK Take a break
-			time.sleep(10)
+			time.sleep(60)
 
-	def checkGmail(self, speaker):
+	def checkGmail(self):
 		"""
 			Description:
 				Checks the unread count in gMail
 		"""
 		logger.info("Checking email")
-		global UNREAD_COUNT
-		global UNREAD_COUNT_NEW
 
-		#UNREAD_COUNT_NEW = utilities.getUnreadCount()
-		UNREAD_COUNT_NEW=0
+		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+		producer.send("google", b"check gmail")
 
-		if (UNREAD_COUNT < UNREAD_COUNT_NEW):
-			logger.info("A new email has arrived...")
-
-			logger.info("Speaking email notification")
-			email_quips = [
-				"Yet another email",
-				"Pardon the interruption sir. Another email has arrived for you to ignore."]
-
-			tempint = randint(1,len(email_quips))
-			#speaker.speakString(email_quips[tempint-1])
-
-		if (UNREAD_COUNT_NEW != 0):
-			logger.info("Unread count: "+str(UNREAD_COUNT_NEW))
-
-	def beSmart(self, speaker):
+	def beSmart(self):
 		"""
 			Description:
 				speak a quip
@@ -155,7 +156,8 @@ class MyDaemon(Daemon):
 		if time.time() - QUIP_START_TIME > QUIP_WAIT_TIME*60:
 			logger.info("It is time to be a smartass")
 
-			#speaker.speakRandom()
+			producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+			producer.send("speak", b"alfr3d-speak.random")
 
 			QUIP_START_TIME = time.time()
 			QUIP_WAIT_TIME = randint(10,50)
@@ -180,12 +182,25 @@ class MyDaemon(Daemon):
 		"""
 		logger.info("nightlight auto-check")
 
+	def checkMute(self):
+		"""
+			Description:
+				checks what time it is and decides if Alfr3d should be quiet
+				- between wake-up time and bedtime
+				- only when Athos is at home
+				- only when 'owner' is at home
+		"""
+		logger.info("Checking if Alfr3d should be muted")
+		result = util_routines.checkMute()
+
+		return result
+
+
 def sunriseRoutine():
 	"""
 		Description:
 			sunset routine - perform this routine 30 minutes before sunrise
 			giving the users time to go see sunrise
-			### TO DO - figure out scheduling
 	"""
 	logger.info("Pre-sunrise routine")
 
@@ -215,7 +230,8 @@ def resetRoutines():
 		Description:
 			refresh some things at midnight
 	"""
-	#utilities.resetRoutines()
+	logger.info("Time to reset routines")
+	util_routines.resetRoutines()
 
 
 def init_daemon():
@@ -224,32 +240,20 @@ def init_daemon():
 			initialize alfr3d services
 	"""
 	logger.info("Initializing systems check")
-	#initSpeaker = utilities.Speaker()
-	#initSpeaker.speakString("Initializing systems check")
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
 
-	# check and create god user if it doesn't exist
-	#user = utilities.User()
-	#user.first()
+	producer.send("speak", b"Initializing systems checks")
 
 	faults = 0
 
 	# initial geo check
-	try:
-		#initSpeaker.speakString("Running geo scan")
-		logger.info("Running a geoscan")
-		#ret = utilities.checkLocation("freegeoip", speaker=initSpeaker)
-		#if not ret[0]:
-		#	raise Exception("Geo scan failed")
-		#initSpeaker.speakString("Geo scan complete")
-	except Exception as e:
-		logger.error("Failed to complete geoscan scan")
-		logger.error("Traceback: "+str(e))
-		faults+=1
+	logger.info("Running a geoscan")
+	producer.send("environment", b"check location")
 
 	# set up some routine schedules
 	try:
-		#initSpeaker.speakString("Setting up scheduled routines")
 		logger.info("Setting up scheduled routines")
+		producer.send("speak", b"Setting up scheduled routines")
 		#utilities.createRoutines()
 		resetRoutines()
 
@@ -262,20 +266,22 @@ def init_daemon():
 		logger.error("Traceback: "+str(e))
 		faults+=1												# bump up fault counter
 
-	#initSpeaker.speakString("Systems check complete")
+	producer.send("speak", b"Systems check is complete")
 	if faults != 0:
-		logger.warn("Some startup faults were detected")
-		#initSpeaker.speakString("Some faults were detected but system started successfully")
-		#initSpeaker.speakString("Total number of faults is "+str(faults))
+		logger.warning("Some startup faults were detected")
+		producer.send("speak", b"Some faults were detected but system started successfully")
+
+		#producer.send("speak", b"Total number of faults is "+str(faults))
+
 	else:
-		logger.warn("All systems are up and operational")
-		#initSpeaker.speakString("All systems are up and operational")
+		logger.info("All systems are up and operational")
+		producer.send("speak", b"All systems are up and operational")
 
 	return
 
 if __name__ == "__main__":
 	#daemon = MyDaemon('/var/run/b3nadaemon/b3nadaemon.pid',stderr='/dev/null')
-	daemon = MyDaemon('/var/run/b3nadaemon/b3nadaemon.pid',stderr='/dev/stderr')
+	daemon = MyDaemon('/var/run/alfr3ddaemon/alfr3ddaemon.pid',stderr='/dev/stderr')
 	if len(sys.argv) == 2:
 		if 'start' == sys.argv[1]:
 			logger.info("Alfr3d Daemon initializing")

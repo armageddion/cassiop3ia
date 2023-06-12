@@ -49,14 +49,23 @@ logger = logging.getLogger("DevicesLog")
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 #handler = logging.FileHandler(os.path.join(CURRENT_PATH,"../log/devices.log"))
-handler = logging.FileHandler(os.path.join(CURRENT_PATH,"../log/total.log"))
+#handler = logging.FileHandler(os.path.join(CURRENT_PATH,"../log/total.log"))
+handler = logging.FileHandler("/var/log/alfr3d/alfr3d.log")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 DATABASE_URL 	= os.environ.get('DATABASE_URL') or 'localhost'
-DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'cassiop3ia'
+DATABASE_NAME 	= os.environ.get('DATABASE_NAME') or 'alfr3d'
 DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
+KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
+
+producer = None
+try:
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+except Exception as e:
+	logger.error("Failed to connect to Kafka")
+	sys.exit()
 
 class Device:
 	"""
@@ -66,13 +75,13 @@ class Device:
 	IP = '0.0.0.0'
 	MAC = '00:00:00:00:00:00'
 	state = 'offline'
-	last_online = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+	last_online = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	environment = socket.gethostname()
 	user = 'unknown'
 	deviceType = 'guest'
 
 	# mandatory to pass MAC for robustness
-	def newDevice(self, mac):
+	def create(self, mac):
 		"""
 			Description:
 				Add new device to the database with default parameters
@@ -102,7 +111,7 @@ class Device:
 			cursor.execute("SELECT * from environment WHERE name = \""+self.environment+"\";")
 			data = cursor.fetchone()
 			envid = data[0]
-			cursor.execute("INSERT INTO device(name, IP, MAC, last_online, state_id, device_type_id, user_id, environment_id) \
+			cursor.execute("INSERT INTO device(name, IP, MAC, last_online, state, device_type, user_id, environment_id) \
 							VALUES (\""+self.name+"\", \""+self.IP+"\", \""+self.MAC+"\",  \""+self.last_online+"\",  \""+str(devstate)+"\",  \""+str(devtype)+"\",  \""+str(usrid)+"\",  \""+str(envid)+"\")")
 			db.commit()
 		except Exception as e:
@@ -113,9 +122,10 @@ class Device:
 			return False
 
 		db.close()
+		producer.send("speak", b"A new device was added to the database")
 		return True
 
-	def getDevice(self,mac):
+	def get(self,mac):
 		"""
 			Description:
 				Find device from DB by MAC
@@ -170,11 +180,11 @@ class Device:
 		try:
 			cursor.execute("UPDATE device SET name = \""+self.name+"\" WHERE MAC = \""+self.MAC+"\";")
 			cursor.execute("UPDATE device SET IP = \""+self.IP+"\" WHERE MAC = \""+self.MAC+"\";")
-			cursor.execute("UPDATE device SET last_online = \""+datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE MAC = \""+self.MAC+"\";")
+			cursor.execute("UPDATE device SET last_online = \""+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"\" WHERE MAC = \""+self.MAC+"\";")
 			cursor.execute("SELECT * from states WHERE state = \"online\";")
 			data = cursor.fetchone()
 			stateid = data[0]
-			cursor.execute("UPDATE device SET state_id = \""+str(stateid)+"\" WHERE MAC = \""+self.MAC+"\";")
+			cursor.execute("UPDATE device SET state = \""+str(stateid)+"\" WHERE MAC = \""+self.MAC+"\";")
 			cursor.execute("SELECT * from environment WHERE name = \""+socket.gethostname()+"\";")
 			data = cursor.fetchone()
 			envid = data[0]
@@ -198,7 +208,7 @@ class Device:
 			Description:
 				Delete a Device from DB
 		"""				
-		logger.info("Updating device")
+		logger.info("Deleting device")
 		db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 		cursor = db.cursor()
 		cursor.execute("SELECT * from device WHERE MAC = \""+self.MAC+"\";")
@@ -265,35 +275,46 @@ def checkLAN():
 	for member in netClientsMACs:
 		print(member)
 		device = Device()
-		exists = device.getDevice(member)
+		exists = device.get(member)
 
-		#if device exists in the DB update it
+		# try to find out device name
+		try:
+			name = socket.gethostbyaddr(netClients2[member])[0]
+			if name == "_gateway":
+				name = None
+		except socket.herror:
+			logger.error("Couldn't resolve hostname for device with MAC: "+member)
+			name = None
+		except Exception as e:
+			logger.error("Failed to find out hostname")
+			logger.error("Traceback: "+str(e))	
+
+		# if device exists in the DB update it
 		if exists:
 			logger.info("Updating device with MAC: "+member)
 			device.IP = netClients2[member]
 			device.update()
 
-		#otherwise, create and add it.
+		# otherwise, create and add it.
 		else:
 			logger.info("Creating a new DB entry for device with MAC: "+member)
 			device.IP = netClients2[member]
 			device.MAC = member
-			device.newDevice(member)
+			if name:
+				device.name = name
+			device.create(member)
 
 	logger.info("Cleaning up temporary files")
-	os.system('rm -rf '+netclientsfile)			
+	os.system('rm -rf '+netclientsfile)
+
+	producer.send("user", b"refresh-all")
 
 if __name__ == '__main__':
 	# get all instructions from Kafka
 	# topic: device
+	logger.info("Starting Alfr3d's device service")
 	try:
-		producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-	except Exception as e:
-		logger.error("Failed to connect to Kafka")
-		sys.exit()
-
-	try:
-		consumer = KafkaConsumer('device', bootstrap_servers='localhost:9092')
+		consumer = KafkaConsumer('device', bootstrap_servers=KAFKA_URL)
 	except Exception as e:
 		logger.error("Failed to connect to Kafka device topic")
 		producer.send("speak", b"Failed to connect to Kafka device topic")
