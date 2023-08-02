@@ -33,13 +33,14 @@
 # imports
 import requests
 import os
+import sys
 import time
 import logging
 import MySQLdb
 from kafka import KafkaConsumer, KafkaProducer
 
 # set up logging
-logger = logging.getLogger("DanavationLog")
+logger = logging.getLogger("LightingLog")
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler = logging.FileHandler("/var/log/alfr3d/alfr3d.log")
@@ -53,6 +54,14 @@ DATABASE_USER 	= os.environ.get('DATABASE_USER') or 'alfr3d'
 DATABASE_PSWD 	= os.environ.get('DATABASE_PSWD') or 'alfr3d'
 KAFKA_URL 		= os.environ.get('KAFKA_URL') or 'localhost:9092'
 
+# this var will be used to handle device type ID for all lights
+logger.info("Fetching Device Type ID")
+db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
+cursor = db.cursor()
+cursor.execute("SELECT * from device_types WHERE type = \"light\"")
+data = cursor.fetchone()	
+LIGHTS_DEV_TYPE = data[0]
+
 # Turn all lights on
 def lights_on():
 	"""
@@ -63,9 +72,9 @@ def lights_on():
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 	cursor = db.cursor()
 	# SELECT * FROM DEVICE where type = Light or something like that
-	cursor.execute("SELECT * from device WHERE ")
+	cursor.execute("SELECT * from device WHERE device_type = "+str(LIGHTS_DEV_TYPE)+"")
 	for light in cursor.fetchall():
-		ip = light['x']
+		ip = light['IP']
 		url=ip+"/on"
 		response = requests.get(url)        
 		if response.status_code != 200:
@@ -85,9 +94,9 @@ def lights_off():
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 	cursor = db.cursor()
 	# SELECT * FROM DEVICE where type = Light or something like that
-	cursor.execute("SELECT * from device WHERE ")
+	cursor.execute("SELECT * from device WHERE device_type = "+str(LIGHTS_DEV_TYPE)+"")
 	for light in cursor.fetchall():
-		ip = light['x']
+		ip = light['IP']
 		url=ip+"/off"    
 		response = requests.get(url)
 		if response.status_code != 200:
@@ -111,9 +120,9 @@ def light_on(light=None):
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 	cursor = db.cursor()
 	# SELECT * FROM DEVICE where name = Light or something like that
-	cursor.execute("SELECT * from device WHERE ")
+	cursor.execute("SELECT * from device WHERE device_type = "+str(LIGHTS_DEV_TYPE)+"")
 	data = cursor.fetchone()
-	ip = data['x']
+	ip = data['IP']
 	url=ip+"/on"    
 	response = requests.get(url)
 	if response.status_code != 200:
@@ -136,9 +145,9 @@ def light_off(light=None):
 	db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
 	cursor = db.cursor()
 	# SELECT * FROM DEVICE where name = Light or something like that
-	cursor.execute("SELECT * from device WHERE ")
+	cursor.execute("SELECT * from device WHERE device_type = "+str(LIGHTS_DEV_TYPE)+"")
 	data = cursor.fetchone()
-	ip = data['x']
+	ip = data['IP']
 	url=ip+"/off"    
 	response = requests.get(url)
 	if response.status_code != 200:
@@ -179,8 +188,3 @@ if __name__ == "__main__":
 
 
 			time.sleep(10)
-
-
-
-
-
