@@ -178,7 +178,7 @@ def morningMailCheck():
 def daytimeMailCheck():
 	"""
 		Description:
-			This function provides the count of unread messages to the morning routine
+			This function provides the count of unread messages to user upon return home
 	"""	
 	if UNREAD_COUNT > 0:
 		producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
@@ -208,14 +208,14 @@ def calendarTomorrow():
 		logger.info('No upcoming events found.')
 		return False, None
 	else:
+		for event in events:
+			start = event['start'].get('dateTime', event['start'].get('date'))
+			print(start, event['summary'])
+			logger.info(str(start)+" : "+event['summery'])
+
+			# since there is only one event, we're ok to do this
+			#return True, event
 		return True, events[0]
-
-	# for event in events:
-	# 	start = event['start'].get('dateTime', event['start'].get('date'))
-	# 	print(start, event['summary'])
-
-	# 	# since there is only one event, we're ok to do this
-	# 	return event
 
 def calendarToday():
 	logger.info("Getting today's calendar info")

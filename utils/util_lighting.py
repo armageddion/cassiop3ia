@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-	This file is used for all weather related functions.
+	This file is used for all Lighting related functions.
 """
 # Copyright (c) 2010-2023 LiTtl3.1 Industries (LiTtl3.1).
 # All rights reserved.
@@ -33,13 +33,14 @@
 # imports
 import requests
 import os
+import sys
 import time
 import logging
 import MySQLdb
 from kafka import KafkaConsumer, KafkaProducer
 
 # set up logging
-logger = logging.getLogger("DanavationLog")
+logger = logging.getLogger("LightingLog")
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler = logging.FileHandler("/var/log/alfr3d/alfr3d.log")
