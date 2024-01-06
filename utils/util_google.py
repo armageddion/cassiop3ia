@@ -210,8 +210,8 @@ def calendarTomorrow():
 	else:
 		for event in events:
 			start = event['start'].get('dateTime', event['start'].get('date'))
-			print(start, event['summary'])
-			logger.info(str(start)+" : "+event['summery'])
+			#print(start, event['summary'])
+			logger.info(str(start)+" : "+event['summary'])
 
 			# since there is only one event, we're ok to do this
 			#return True, event
