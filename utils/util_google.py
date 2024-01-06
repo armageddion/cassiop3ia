@@ -215,6 +215,20 @@ def calendarTomorrow():
 
 			# since there is only one event, we're ok to do this
 			#return True, event
+
+			producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+			# send msg to the speaker
+			greeting = "Tomorrow at "
+			greeting += datetime.datetime.fromisoformat(start).hour
+			greeting += " hours "
+			if datetime.datetime.fromisoformat(start).minute != 0:
+				greeting += "and "
+				greeting += datetime.datetime.fromisoformat(start).minute
+				greeting += " minutes "
+			greeting += "you have "
+			greeting += event['summary']
+			producer.send("speak", greeting.encode('utf-8'))
+
 		return True, events[0]
 
 def calendarToday():
@@ -239,9 +253,22 @@ def calendarToday():
 		logger.info('No upcoming events found.')
 		return False, None
 
-	# for event in events:
-	# 	start = event['start'].get('dateTime', event['start'].get('date'))
-	# 	print(start, event['summary'])
+	producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+	for event in events:
+		start = event['start'].get('dateTime', event['start'].get('date'))
+		logger.info(str(start)+" : "+event['summary'])
+
+		# send msg to the speaker
+		greeting = "at "
+		greeting += datetime.datetime.fromisoformat(start).hour
+		greeting += " hours "
+		if datetime.datetime.fromisoformat(start).minute != 0:
+			greeting += "and "
+			greeting += datetime.datetime.fromisoformat(start).minute
+			greeting += " minutes "
+		greeting += "you have "
+		greeting += event['summary']
+		producer.send("speak", greeting.encode('utf-8'))
 
 	logger.info("Done checking calendar")
 	return True, events

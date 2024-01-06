@@ -37,7 +37,7 @@ import logging										# needed for useful logs
 import socket
 import MySQLdb
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from kafka import KafkaConsumer,KafkaProducer
 from time import gmtime, strftime, localtime		# needed to obtain time
 from urllib.request import urlopen					# used to make calls to www
@@ -120,7 +120,6 @@ def getWeather(lat,lon):
 
 	logger.info("Parsed weather data\n")
 
-	# Initialize the database
 	logger.info("Updating weather data in DB")
 
 	try:
@@ -141,15 +140,19 @@ def getWeather(lat,lon):
 		return False
 
 	# update times for sunrise and sunset routines
+	# set sunrise/sunset routines to trigger half hour before the 
+	# actual event so that listeners have time to take action
 	try:
 		logger.info("Updating routines")
+		sunrise_trig = datetime.fromtimestamp(weatherData['sys']['sunrise']) - timedelta(hours=0,minutes=30)
+		sunset_trig = datetime.fromtimestamp(weatherData['sys']['sunset']) - timedelta(hours=0,minutes=30)
 		cursor.execute("SELECT * FROM environment WHERE name = \""+socket.gethostname()+"\";")
 		env_data = cursor.fetchone()
 		env_id = env_data[0]
-		cursor.execute("UPDATE routines SET time = \""+datetime.fromtimestamp(weatherData['sys']['sunrise']).strftime("%H:%M:%S")+"\" \
+		cursor.execute("UPDATE routines SET time = \""+sunrise_trig.strftime("%H:%M:%S")+"\" \
 						WHERE name = \"Sunrise\" \
 						and environment_id = \""+str(env_id)+"\";")
-		cursor.execute("UPDATE routines SET time = \""+datetime.fromtimestamp(weatherData['sys']['sunset']).strftime("%H:%M:%S")+"\" \
+		cursor.execute("UPDATE routines SET time = \""+sunset_trig.strftime("%H:%M:%S")+"\" \
 						WHERE name = \"Sunset\" \
 						and environment_id = \""+str(env_id)+"\";")
 		cursor.execute("UPDATE routines SET triggered = 0 \

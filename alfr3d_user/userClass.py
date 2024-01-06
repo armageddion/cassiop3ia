@@ -255,7 +255,10 @@ def refreshAll():
 		# get all devices for that user
 		try:
 			logger.info("Fetching user devices")
-			cursor.execute("SELECT * FROM device WHERE user_id = "+str(user[0])+" and device_type != "+str(dev_types['HW'])+";")
+			cursor.execute("SELECT * FROM device d \
+				  			inner join device_types dt on d.device_type = dt.id \
+							WHERE user_id = "+str(user[0])+" \
+							AND type = \"guest\" or type = \"resident\";")
 			devices = cursor.fetchall()
 			for device in devices:
 				# update last_online time for that user

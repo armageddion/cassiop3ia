@@ -334,8 +334,16 @@ class Speaker:
 		logger.info("Performing routine: "+routine_name)
 
 		if routine_name == 'Sunrise':
-			## TODO
-			pass
+			self.speakTime()
+			db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
+			cursor = db.cursor()
+			cursor.execute("SELECT * FROM quips WHERE type = 'sunrise';")
+			quip_data = cursor.fetchall()
+
+			quip = quip_data[randint(0,len(quip_data)-1)][2]
+
+			db.close()
+			self.speakString(quip)
 		elif routine_name == 'Morning':
 			# play music
 			try: 
@@ -355,9 +363,21 @@ class Speaker:
 			# get undread count
 			producer.send('google',b"morning mail")
 
+			# get todays events
+			producer.send('google',b"check calendar today")
+
 		elif routine_name == 'Sunset':
-			## TODO
-			pass
+			self.speakTime()
+			db = MySQLdb.connect(DATABASE_URL,DATABASE_USER,DATABASE_PSWD,DATABASE_NAME)
+			cursor = db.cursor()
+			cursor.execute("SELECT * FROM quips WHERE type = 'sunset';")
+			quip_data = cursor.fetchall()
+
+			quip = quip_data[randint(0,len(quip_data)-1)][2]
+
+			db.close()
+			self.speakString(quip)
+
 		elif routine_name == 'Bedtime':
 			self.speakTime()
 
@@ -371,6 +391,8 @@ class Speaker:
 
 			db.close()
 			self.speakString(quip)
+			producer = KafkaProducer(bootstrap_servers=[KAFKA_URL])
+			producer.send('google',b"check calendar tomorrow")
 
 		else:
 			logger.info("I don't know how to perform this routine")
