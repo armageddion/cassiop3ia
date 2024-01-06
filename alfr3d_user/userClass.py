@@ -258,14 +258,14 @@ def refreshAll():
 			cursor.execute("SELECT d.last_online FROM device d \
 				  			inner join device_types dt on d.device_type = dt.id \
 							WHERE user_id = "+str(user[0])+" \
-							AND type = \"guest\" or type = \"resident\";")
+							AND (type = \"guest\" or type = \"resident\");")
 			devices = cursor.fetchall()
 			for device in devices:
 				# update last_online time for that user
 				if device[0] > user[6]:
 					logger.info("Updating user "+user[1])
 					cursor.execute("UPDATE user SET last_online = \""+str(device[0])+"\" WHERE username = \""+user[1]+"\";")
-					cursor.execute("UPDATE user set environment_id = \""+str(env_id)+"\" WHERE username = \""+user[1]+"\";")
+					cursor.execute("UPDATE user SET environment_id = \""+str(env_id)+"\" WHERE username = \""+user[1]+"\";")
 					db.commit()
 					last_online = device[0] 	# most recent online time (user[6] is when user went offline last time)
 		except Exception as  e:
