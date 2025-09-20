@@ -1,0 +1,16 @@
+name: "Generate SBOM"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  merge_request:
+    branches: [ "main" ]
+
+jobs:
+- name: Generate SBOM
+  uses: anchore/sbom-action@v0.15.4
+  with:
+    output-file: sbom.spdx.json
+    format: spdx-json
