@@ -13,6 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Syft
+        run: |
+          SYFT_VERSION="v0.101.0"
+          curl -sSL "https://github.com/anchore/syft/releases/download/${SYFT_VERSION}/syft_${SYFT_VERSION#v}_linux_amd64.tar.gz" -o syft.tar.gz
+          tar -xzf syft.tar.gz syft
+          sudo mv syft /usr/local/bin/
+
       - name: Generate SBOM
         uses: anchore/sbom-action@v0.15.4
         with:
